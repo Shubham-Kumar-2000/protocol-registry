@@ -1,4 +1,4 @@
-# protocol-registry
+# Protocol-registry
 
 > Registers protocol like myapp:// to open your nodejs app from browsers. 
 
