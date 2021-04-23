@@ -30,7 +30,9 @@
     "url": "https://github.com/Shubham-Kumar-2000/protocol-registry/issues"
   },
   "homepage": "https://github.com/Shubham-Kumar-2000/protocol-registry#readme",
-  "dependencies": {},
+  "dependencies": {
+    "winreg": "^1.2.4"
+  },
   "devDependencies": {
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^6.7.0",

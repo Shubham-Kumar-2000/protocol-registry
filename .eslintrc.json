@@ -51,7 +51,8 @@
                 "jsxBracketSameLine": true,
                 "parser": "flow",
                 "semi": true,
-                "endOfLine":"auto"
+                "endOfLine":"auto",
+                "tabWidth":4
             }
         ]
     }
