@@ -28,7 +28,7 @@
     "uri-scheme",
     "nodejs",
     "protocol-registry",
-    "register a custor protocol nodejs"
+    "register a custom protocol nodejs"
   ],
   "author": "Shubham Kumar <shukhu10@gmail.com>",
   "license": "MIT",
