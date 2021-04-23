@@ -12,6 +12,10 @@
     "format": "./node_modules/.bin/eslint . --fix",
     "husky-talisman": "husky-talisman"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "engineStrict": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Shubham-Kumar-2000/protocol-registry.git"
@@ -22,9 +26,11 @@
     "module://",
     "app://",
     "uri-scheme",
-    "nodejs"
+    "nodejs",
+    "protocol-registry",
+    "register a custor protocol nodejs"
   ],
-  "author": "Shubham Kumar",
+  "author": "Shubham Kumar <shukhu10@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Shubham-Kumar-2000/protocol-registry/issues"
