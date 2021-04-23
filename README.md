@@ -112,7 +112,7 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 	<tr>
 		<td>
             <a href="https://github.com/Shubham-Kumar-2000/protocol-registry/graphs/contributors">
-                <img src="https://contrib.rocks/image?repo=/Shubham-Kumar-2000/protocol-registry" />
+                <img src="https://contrib.rocks/image?repo=Shubham-Kumar-2000/protocol-registry" />
             </a>
 		</td>
 	</tr>
