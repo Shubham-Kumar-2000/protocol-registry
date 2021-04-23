@@ -1,5 +1,8 @@
 module.exports = {
-    hello: () => {
-        console.log('hello linux');
+    checkifExists: () => {
+        throw new Error('Linux not supported');
+    },
+    register: () => {
+        throw new Error('Linux not supported');
     }
 };

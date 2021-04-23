@@ -31,6 +31,9 @@
   },
   "homepage": "https://github.com/Shubham-Kumar-2000/protocol-registry#readme",
   "dependencies": {
+    "is-wsl": "^2.2.0",
+    "joi": "^17.4.0",
+    "path": "^0.12.7",
     "winreg": "^1.2.4"
   },
   "devDependencies": {

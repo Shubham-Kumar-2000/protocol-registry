@@ -1,5 +1,8 @@
 module.exports = {
-    hello: () => {
-        console.log('hello macos');
+    checkifExists: () => {
+        throw new Error('MacOs not supported');
+    },
+    register: () => {
+        throw new Error('MacOs not supported');
     }
 };
