@@ -17,4 +17,7 @@ const getplatform = () => {
 
 const platform = getplatform();
 
-module.exports = platform;
+module.exports = {
+    register: platform.register,
+    checkifExists: platform.checkifExists
+};

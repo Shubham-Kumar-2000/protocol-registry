@@ -1,0 +1,3 @@
+ - [XDG Query](https://unix.stackexchange.com/questions/134352/xdg-open-opens-a-different-application-to-the-one-specified-by-xdg-mime-query)
+ - [XDG Default](https://unix.stackexchange.com/questions/497146/create-a-custom-url-protocol-handler)
+ - [Origin](https://stackoverflow.com/questions/18534591/how-to-register-a-url-protocol-handler-in-node-js/67231906#67231906)
