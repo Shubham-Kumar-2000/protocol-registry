@@ -1,0 +1,58 @@
+{
+    "env": {
+        "commonjs": true,
+        "es2020": true,
+        "node": true
+    },
+    "extends": ["eslint:recommended", "plugin:node/recommended"],
+    "plugins": ["prettier"],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "node/shebang": "error",
+        "indent": ["error", 4],
+        "prefer-const": ["error", {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": false
+        }],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "linebreak-style": 0,
+        "no-use-before-define": 0,
+        "no-tabs": 0,
+        "no-underscore-dangle": 0,
+        "space-before-function-paren": 0,
+        "quote-props": 0,
+        "comma-dangle": 0,
+        "operator-linebreak": 0,
+        "new-cap": 0,
+        "arrow-parens": 0,
+        "function-paren-newline": 0,
+        "no-param-reassign": 0,
+        "object-curly-newline": 0,
+        "no-console": 0,
+        "import/prefer-default-export": 0,
+        "consistent-return": 0,
+        "func-names": 0,
+        "implicit-arrow-linebreak": 0,
+        "node/no-extraneous-require": [
+            "error",
+            {
+                "allowModules": ["chalk"]
+            }
+        ],
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true,
+                "trailingComma": "none",
+                "bracketSpacing": true,
+                "jsxBracketSameLine": true,
+                "parser": "flow",
+                "semi": true,
+                "endOfLine":"auto"
+            }
+        ]
+    }
+}

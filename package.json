@@ -1,0 +1,43 @@
+{
+  "name": "protocol-registry",
+  "version": "1.0.0",
+  "description": "This module allows you to set custom protocol handler for your nodejs app.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "devStart": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "lint": "prettier --check .",
+    "format": "./node_modules/.bin/eslint . --fix",
+    "husky-talisman": "husky-talisman"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubham-Kumar-2000/protocol-registry.git"
+  },
+  "keywords": [
+    "protocol",
+    "registry",
+    "module://",
+    "app://",
+    "uri-scheme",
+    "nodejs"
+  ],
+  "author": "Shubham Kumar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shubham-Kumar-2000/protocol-registry/issues"
+  },
+  "homepage": "https://github.com/Shubham-Kumar-2000/protocol-registry#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^6.0.0",
+    "nodemon": "^2.0.7",
+    "prettier": "2.2.1"
+  }
+}
