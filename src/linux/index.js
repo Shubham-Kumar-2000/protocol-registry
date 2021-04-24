@@ -83,6 +83,8 @@ const register = async (options, cb) => {
         const scriptResult = shell.exec('sudo ' + scriptFilePath);
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
+        
+        fs.unlinkSync(scriptFilePath)
     } catch (e) {
         if (!cb) throw e;
         res = e;
