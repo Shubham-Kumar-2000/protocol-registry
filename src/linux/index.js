@@ -86,8 +86,8 @@ const register = async (options, cb) => {
         });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
-        
-        fs.unlinkSync(scriptFilePath)
+
+        fs.unlinkSync(scriptFilePath);
     } catch (e) {
         if (!cb) throw e;
         res = e;
