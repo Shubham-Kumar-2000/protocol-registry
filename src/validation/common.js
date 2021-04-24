@@ -5,5 +5,6 @@ exports.registerSchema = Joi.object({
         .regex(/^[a-zA-Z]+$/)
         .required(),
     command: Joi.string().required(),
-    override: Joi.boolean()
+    override: Joi.boolean(),
+    terminal: Joi.boolean()
 });

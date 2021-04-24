@@ -33,12 +33,16 @@ const checkifExists = (protocol) => {
  * @param {string=} options.protocol - Protocol on which it the given command should be called.
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
+ * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {function (err)} cb - callback function Optional
  */
 
 const register = async (options, cb) => {
     let res = null;
-    const { protocol, command, override } = validator(registerSchema, options);
+    const { protocol, command, override, terminal } = validator(
+        registerSchema,
+        options
+    );
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     try {
@@ -57,7 +61,7 @@ const register = async (options, cb) => {
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 desktopTemplate,
-                { protocol, command, terminal: true },
+                { protocol, command, terminal },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);

@@ -27,12 +27,16 @@ const checkifExists = (protocol) => {
  * @param {string=} options.protocol - Protocol on which it the given command should be called.
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
+ * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {function (err)} cb - callback function Optional
  */
 
 const register = async (options, cb) => {
     let res = null;
-    const { protocol, command, override } = validator(registerSchema, options);
+    const { protocol, command, override, terminal } = validator(
+        registerSchema,
+        options
+    );
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     // HKEY_CLASSES_ROOT
@@ -109,7 +113,7 @@ const register = async (options, cb) => {
             commandRegistry.set(
                 Registry.DEFAULT_VALUE,
                 Registry.REG_SZ,
-                'cmd /c ' + command + ' %1',
+                (terminal && 'cmd /c ') + command + ' %1',
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
