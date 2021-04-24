@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=DDG Scheme Handler
+Exec=node /home/san/Desktop/shubham/testJS.js %u
+StartupNotify=false
+Terminal=true
+MimeType=x-scheme-handler/ddg;

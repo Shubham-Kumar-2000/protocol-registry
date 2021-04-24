@@ -1,0 +1,5 @@
+sudo cp ~/Desktop/shubham/test.desktop  /usr/share/applications/
+
+At location /usr/share/applications/: xdg-mime default test.desktop x-scheme-handler/ddg
+
+To check: xdg-mime query default x-scheme-handler/ddg
