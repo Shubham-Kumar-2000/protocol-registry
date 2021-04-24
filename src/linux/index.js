@@ -14,7 +14,8 @@ const { registerSchema } = require('../validation/common');
 const checkifExists = (protocol) => {
     return new Promise((resolve, reject) => {
         const res = shell.exec(
-            `xdg-mime query default x-scheme-handler/${protocol}`
+            `xdg-mime query default x-scheme-handler/${protocol}`,
+            { silent: true }
         );
         if (res.code !== 0 || res.stderr) {
             return reject(res.stderr);
@@ -80,7 +81,9 @@ const register = async (options, cb) => {
         const chmod = shell.exec('chmod +x ' + scriptFilePath);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = shell.exec('sudo ' + scriptFilePath);
+        const scriptResult = shell.exec('sudo ' + scriptFilePath, {
+            silent: true
+        });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
     } catch (e) {
