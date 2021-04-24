@@ -28,7 +28,8 @@ console.log('Registering...');
 ProtocolRegistry.register({
     protocol: 'testproto', // set your app for testproto://**
     command: `node ${path.join(__dirname, './tester.js')}`, // this will be executed with a extra argument %url from which it was initiated
-    override: true // Use this with caution as it will destroy all previous Registrations on this protocol
+    override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
+    terminal: true // Use this to run your command inside a terminal
 }).then(async () => {
     console.log('Successfully registered');
 });
@@ -55,6 +56,7 @@ const ProtocolRegistry = require('protocol-registry');
 ProtocolRegistry.register({
     protocol: 'testproto',
     command: `node ${path.join(__dirname, './tester.js')}`,
+    terminal: true
 }).then(()=>{
     // do something
 }).catch((e)=>{
@@ -68,12 +70,26 @@ ProtocolRegistry.register({
 ProtocolRegistry.register({
     protocol: 'testproto',
     command: `node ${path.join(__dirname, './tester.js')}`,
+    terminal: true
 },(err)=>{
     if(err){
         // do something
     }
 })
 // Example with callback
+
+ProtocolRegistry.register({
+    protocol: 'testproto',
+    command: `node ${path.join(__dirname, './tester.js')}`,
+    terminal: false // Terminal is set to false
+},(err)=>{
+    if(err){
+        // do something
+    }
+})
+// The above code will run your command in background
+// You wont be able to see any logs
+// But if your program launches any UI / webpage / file will be visible
 ```
 ### checkifExists(protocol)
 
@@ -100,8 +116,8 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 
 ## Supported platforms
 
-- [`Windows`](https://g.co/kgs/bm4Z4b) - OS
-- [`linux`](https://g.co/kgs/xXAi4C) - OS - Work in progress - Not supported yet.
+- [`Windows`](https://g.co/kgs/bm4Z4b) - OS - Supported 
+- [`linux`](https://g.co/kgs/xXAi4C) - OS - Supported
 - [`MacOS`](https://g.co/kgs/k8yG4U) - OS - Work in progress - Not supported yet.
 
 ## Contributors:
