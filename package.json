@@ -8,9 +8,8 @@
     "prepare": "husky install",
     "devStart": "nodemon src/index.js",
     "start": "node src/index.js",
-    "lint": "prettier --check .",
     "format": "./node_modules/.bin/eslint . --fix",
-    "husky-talisman": "husky-talisman"
+    "postinstall": "node src/postinstall.js"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -37,6 +36,7 @@
   },
   "homepage": "https://github.com/Shubham-Kumar-2000/protocol-registry#readme",
   "dependencies": {
+    "child_process": "^1.0.2",
     "ejs": "^3.1.6",
     "fs": "0.0.1-security",
     "is-wsl": "^2.2.0",
