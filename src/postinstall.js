@@ -1,12 +1,28 @@
-const spawn = require('child_process').spawn;
+const child = require('child_process');
 const constants = require('./config/constants');
 
-if (process.platform === constants.platforms.linux) {
-    const child = spawn('sudo apt-get update -y; sudo apt install xdg-utils', {
-        stdio: true
-    });
-    child.on('error', function (err) {
-        console.log('Error installing xdg-utils: ' + err);
+const checkIfInstalled = () => {
+    try {
+        child.execSync(' xdg-mime --version', {
+            stdio: 'pipe'
+        });
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+const installXdgUtils = () => {
+    try {
+        child.execSync('sudo apt-get update -y; sudo apt install xdg-utils', {
+            stdio: 'inherit'
+        });
+    } catch (e) {
+        console.log('Error installing xdg-utils: ' + e);
         console.log('Please install it manually');
-    });
+    }
+};
+
+if (process.platform === constants.platforms.linux && !checkIfInstalled()) {
+    installXdgUtils();
 }
