@@ -1,0 +1,6 @@
+# Compile testz file and create testz.app
+osacompile -o ./testz.app ./testz.txt
+# Compile testzWrapper file and create testzWrapper.app
+osacompile -o ./testzWrapper.app ./testzWrapper.txt
+# Register testzWrapper for custom URI
+open ./testzWrapper.app
