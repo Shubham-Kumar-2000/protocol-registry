@@ -1,0 +1,4 @@
+on open location this_URL
+    set the clipboard to this_URL
+    tell application "/Users/mayankkumar/Desktop/protocol-registry/assets/mac/testz.app" to activate
+end open location

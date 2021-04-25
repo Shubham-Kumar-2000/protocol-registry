@@ -1,0 +1,5 @@
+tell application "Terminal"
+    set this_URL to ( the clipboard as text )
+    do script "node /Users/mayankkumar/Desktop/protocol-registry/assets/tester.js '" & this_URL & "'"
+    activate
+end tell
