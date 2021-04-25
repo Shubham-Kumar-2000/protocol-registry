@@ -5,7 +5,7 @@ if (process.argv.length < 4) throw new Error('App or protocol absent');
 const protocol = process.argv[3];
 const app = process.argv[2];
 var obj = plist.parse(
-    fs.readFileSync(join(app + './Contents/Info.plist')).toString()
+    fs.readFileSync(join(app, './Contents/Info.plist')).toString()
 );
 obj['CFBundleURLTypes'] = [
     {
@@ -13,4 +13,4 @@ obj['CFBundleURLTypes'] = [
         CFBundleURLSchemes: [protocol]
     }
 ];
-fs.writeFileSync(join(app + './Contents/Info.plist'), plist.build(obj));
+fs.writeFileSync(join(app, './Contents/Info.plist'), plist.build(obj));

@@ -27,27 +27,27 @@ if (process.platform === constants.platforms.linux && !checkIfXDGInstalled()) {
     installXdgUtils();
 }
 
-const checkIfDutiInstalled = () => {
-    try {
-        child.execSync('duti -V', {
-            stdio: 'pipe'
-        });
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
+// const checkIfDutiInstalled = () => {
+//     try {
+//         child.execSync('duti -V', {
+//             stdio: 'pipe'
+//         });
+//         return true;
+//     } catch (e) {
+//         return false;
+//     }
+// };
 
-const installDuti = () => {
-    try {
-        child.execSync('brew install duti', {
-            stdio: 'inherit'
-        });
-    } catch (e) {
-        console.log('Error installing xdg-utils: ' + e);
-        console.log('Please install it manually');
-    }
-};
-if (process.platform === constants.platforms.macos && !checkIfDutiInstalled()) {
-    installDuti();
-}
+// const installDuti = () => {
+//     try {
+//         child.execSync('brew install duti', {
+//             stdio: 'inherit'
+//         });
+//     } catch (e) {
+//         console.log('Error installing xdg-utils: ' + e);
+//         console.log('Please install it manually');
+//     }
+// };
+// if (process.platform === constants.platforms.macos && !checkIfDutiInstalled()) {
+//     installDuti();
+// }

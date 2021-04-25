@@ -12,17 +12,22 @@ const homedir = require('os').homedir();
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
-    return new Promise((resolve, reject) => {
-        const res = shell.exec(`duti -x ${protocol}`, { silent: true });
-        if (res.code !== 0 || res.stderr) {
-            return reject(res.stderr);
-        }
-        if (res.stdout && res.stdout.length > 0) {
-            return resolve(true);
-        }
-        return resolve(false);
-    });
+// const checkifExists = (protocol) => {
+//     return new Promise((resolve, reject) => {
+//         const res = shell.exec(`duti -x ${protocol}`, { silent: true });
+//         if (res.code !== 0 || res.stderr) {
+//             return reject(res.stderr);
+//         }
+//         if (res.stdout && res.stdout.length > 0) {
+//             return resolve(true);
+//         }
+//         return resolve(false);
+//     });
+//     return false;
+// };
+
+const checkifExists = () => {
+    return false;
 };
 
 /**
