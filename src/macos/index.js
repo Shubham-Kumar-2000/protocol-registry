@@ -25,7 +25,11 @@ const homedir = require('os').homedir();
 //     });
 //     return false;
 // };
-
+/**
+ * Checks if the given protocal already exist on not
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
 const checkifExists = () => {
     return false;
 };
