@@ -1,0 +1,4 @@
+osacompile -o '<%- appPath %>'  '<%- appSource %>' 
+osacompile -o '<%- urlAppPath %>'  '<%- urlAppSource %>' 
+node '<%- plistMutator %>' '<%- urlAppPath %>' <%= protocol %> 
+open '<%- urlAppPath %>'

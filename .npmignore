@@ -107,3 +107,8 @@ elct.cc
 
 
 yarn.lock
+.github
+.husky
+assets
+
+.eslintrc.json

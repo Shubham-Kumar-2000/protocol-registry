@@ -1,0 +1,10 @@
+<%if (terminal > 0) { %>
+tell application "Terminal"
+    set this_URL to ( the clipboard as text )
+    do script "<%- command %>  '" & this_URL & "'"
+    activate
+end tell
+<% } else { %>
+set this_URL to ( the clipboard as text )
+do shell script "<%- command %> '" & this_URL & "'"
+<% } %>

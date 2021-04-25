@@ -1,3 +1,3 @@
-mv <%- desktopFilePath %>  /usr/share/applications/
+mv '<%- desktopFilePath %>'  /usr/share/applications/
 cd /usr/share/applications/
 xdg-mime default <%- desktopFileName %> x-scheme-handler/<%= protocol %> 
