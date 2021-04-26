@@ -5,7 +5,11 @@ const shell = require('shelljs');
 
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
-const homedir = require('os').homedir();
+const homedir = join(require('os').homedir(), '.protocol-registry');
+
+if (!fs.existsSync(homedir)) {
+    fs.mkdirSync(homedir);
+}
 
 /**
  * Checks if the given protocal already exist on not

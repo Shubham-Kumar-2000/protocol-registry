@@ -7,6 +7,7 @@ const app = process.argv[2];
 var obj = plist.parse(
     fs.readFileSync(join(app, './Contents/Info.plist')).toString()
 );
+obj['CFBundleIdentifier'] = 'com.protocol.registry.' + protocol;
 obj['CFBundleURLTypes'] = [
     {
         CFBundleURLName: 'URL : ' + protocol,
