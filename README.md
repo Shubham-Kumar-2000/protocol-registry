@@ -122,15 +122,6 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 
 ## MacOS Anomalies
 
-### checkifExists(protocol)
-
-We still struggling to find a way to check this in MacOS.
-We know there is something called duti by which we can achieve this but as this is not in-built command we don't want to add this as a dependency.
-
-**So for ease of work checkifExists() always return false in MacOS**
-
-This also means override: true/false will mean the same thing in MacOS 
-
 ### terminal: false
 
 In MacOS if you dont launch the terminal it will run your command without logging in.
