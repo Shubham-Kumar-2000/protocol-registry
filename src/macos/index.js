@@ -25,7 +25,7 @@ const checkifExists = (protocol) => {
         if (res.code !== 0 || res.stderr) {
             return reject(res.stderr);
         }
-        if (res.stdout === 'true') return resolve(true);
+        if (res.stdout.trim() === 'true') return resolve(true);
         return resolve(false);
     });
 };
