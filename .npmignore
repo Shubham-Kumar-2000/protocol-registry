@@ -112,3 +112,4 @@ yarn.lock
 assets
 
 .eslintrc.json
+/src/macos/defaultAppExist/

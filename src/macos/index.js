@@ -17,18 +17,16 @@ if (!fs.existsSync(homedir)) {
  * @returns {Promise}
  */
 const checkifExists = (protocol) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const res = shell.exec(
-            `${join(
-                __dirname,
-                './defaultAppExist.app/Products/usr/local/bin/defaultAppExist'
-            )} "${protocol}://test"`,
+            `${join(__dirname, './defaultAppExist.sh')} "${protocol}://test"`,
             { silent: true }
         );
         if (res.code !== 0 || res.stderr) {
-            return resolve(false);
+            return reject(res.stderr);
         }
-        return resolve(true);
+        if (res.stdout === 'true') return resolve(true);
+        return resolve(false);
     });
 };
 
