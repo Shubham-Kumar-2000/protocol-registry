@@ -124,7 +124,7 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 
 ### terminal: false
 
-In MacOS if you dont launch the terminal it will run your command without logging in.
+In MacOS if you don't launch the terminal it will run your command without logging in.
 
 Thus you need to use absolute address of each command in your command string.
 
@@ -132,19 +132,19 @@ Thus you need to use absolute address of each command in your command string.
 
 Suppose you want to run :
 ```
-node /path/to/index.js
+$ node /path/to/index.js
 ```
 
 Then first you need to find the path of node using the command below in terminal :
 ```
-type node
+$ type node
 // node is /usr/local/bin/node
 ```
 
 Then replace the address of node in original comand.
 So your final command will be :
 ```
-/usr/local/bin/node /path/to/index.js
+$ /usr/local/bin/node /path/to/index.js
 ```
 
 To check if your program is running in MacOS you can use the code below:
