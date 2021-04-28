@@ -100,7 +100,7 @@ node ${path.join(__dirname, './tester.js')} $_URL_
 ProtocolRegistry.register({
     protocol: 'testproto',
     command: commands,
-    terminal: true // Terminal is set to false
+    terminal: true, // Terminal is set to false
     script: true // This will save your commands in a script file and execute it when the protocol is hit.
 },(err)=>{
     if(err){
