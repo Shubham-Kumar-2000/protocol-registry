@@ -29,7 +29,8 @@ ProtocolRegistry.register({
     protocol: 'testproto', // set your app for testproto://**
     command: `node ${path.join(__dirname, './tester.js')} $_URL_`, // this will be executed with a extra argument %url from which it was initiated
     override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
-    terminal: true // Use this to run your command inside a terminal
+    terminal: true, // Use this to run your command inside a terminal
+    script: false
 }).then(async () => {
     console.log('Successfully registered');
 });
@@ -100,7 +101,7 @@ ProtocolRegistry.register({
     protocol: 'testproto',
     command: commands,
     terminal: true // Terminal is set to false
-    script:true // This will save your commands in a script file and execute it when the protocol is hit.
+    script: true // This will save your commands in a script file and execute it when the protocol is hit.
 },(err)=>{
     if(err){
         // do something
@@ -134,7 +135,7 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 
 ### options
 Register function accept the below mentioned option
-| name           | types              | default      | Detail                                                                                                                                                                                                                                    |
+| name           | types              | default      | details                                                                                                                                                                                                                                   |
 | ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | protocol       | String (required)  | NA           | Only alphabets allowed. Your command will be executed when any url starting with this protocol is opened i.e. "myapp://test","testproto://abcd?mode=dev", etc. And please make sure that the protocol is unique to your application.      |
 | command        | String (required)  | NA           | This command will be executed when the proctocol is called. **$_URL** mentioned anywhere in your command will be replaced by the url by which it is initiated.                                                                            |
@@ -166,7 +167,7 @@ $ node /path/to/index.js
 Then first you need to find the path of node using the command below in terminal :
 ```
 $ type node
-// node is /usr/local/bin/node
+> node is /usr/local/bin/node
 ```
 
 Then replace the address of node in original comand.

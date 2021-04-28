@@ -110,6 +110,6 @@ yarn.lock
 .github
 .husky
 assets
-
+test
 .eslintrc.json
 /src/macos/defaultAppExist/
