@@ -6,5 +6,6 @@ exports.registerSchema = Joi.object({
         .required(),
     command: Joi.string().required(),
     override: Joi.boolean(),
-    terminal: Joi.boolean()
+    terminal: Joi.boolean(),
+    script: Joi.boolean()
 });

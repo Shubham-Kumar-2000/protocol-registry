@@ -3,14 +3,21 @@ const fs = require('fs');
 const { join } = require('path');
 const shell = require('shelljs');
 
+const constants = require('../config/constants');
+const { preProcessCommands } = require('../utils/processCommand');
+
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
-const homedir = join(require('os').homedir(), '.protocol-registry');
+const { homedir } = constants;
 
-if (!fs.existsSync(homedir)) {
-    fs.mkdirSync(homedir);
+if (process.platform === constants.platforms.macos) {
+    const modRes = shell.exec(
+        `chmod +x ${join(__dirname, './defaultAppExist.sh')}`
+    );
+    if (modRes.code != 0) {
+        throw new Error(modRes.stderr);
+    }
 }
-
 /**
  * Checks if the given protocal already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
@@ -37,15 +44,20 @@ const checkifExists = (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
+ * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
  * @param {function (err)} cb - callback function Optional
  */
 
 const register = async (options, cb) => {
     let res = null;
-    const { protocol, command, override, terminal } = validator(
-        registerSchema,
-        options
-    );
+    const validOptions = validator(registerSchema, options);
+    const {
+        protocol,
+        override,
+        terminal,
+        script: scriptRequired
+    } = validOptions;
+    let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     try {
@@ -54,6 +66,9 @@ const register = async (options, cb) => {
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
         }
+
+        command = await preProcessCommands(protocol, command, scriptRequired);
+
         const plistMutator = join(__dirname, 'plistMutator.js');
 
         const appTemplate = join(__dirname, './templates', 'app.ejs');

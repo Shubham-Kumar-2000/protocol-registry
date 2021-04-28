@@ -2,6 +2,7 @@ const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
 const shell = require('shelljs');
+const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
@@ -34,15 +35,20 @@ const checkifExists = (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
+ * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
  * @param {function (err)} cb - callback function Optional
  */
 
 const register = async (options, cb) => {
     let res = null;
-    const { protocol, command, override, terminal } = validator(
-        registerSchema,
-        options
-    );
+    const validOptions = validator(registerSchema, options);
+    const {
+        protocol,
+        override,
+        terminal,
+        script: scriptRequired
+    } = validOptions;
+    let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     try {
@@ -57,6 +63,8 @@ const register = async (options, cb) => {
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(__dirname, '../../temp', 'script.sh');
+
+        command = await preProcessCommands(protocol, command, scriptRequired);
 
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
