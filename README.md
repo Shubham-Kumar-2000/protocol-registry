@@ -1,4 +1,4 @@
-# Protocol-registry
+﻿# Protocol-registry
 
 > Registers protocol like myapp:// to open your nodejs app from browsers. 
 
@@ -27,7 +27,7 @@ console.log('Registering...');
 // Registers the Protocol
 ProtocolRegistry.register({
     protocol: 'testproto', // set your app for testproto://**
-    command: `node ${path.join(__dirname, './tester.js')}`, // this will be executed with a extra argument %url from which it was initiated
+    command: `node ${path.join(__dirname, './tester.js')} $_URL_`, // this will be executed with a extra argument %url from which it was initiated
     override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
     terminal: true // Use this to run your command inside a terminal
 }).then(async () => {
@@ -41,7 +41,7 @@ At present it supports :
 
 ### register(options, cb(err))
 
-Options are mentioned in the above example.
+Options are mentioned in the above example, more details below.
 If a valid callback is provided then it returns cb(err)
 Otherwise it returns a promise.
 
@@ -55,7 +55,7 @@ const ProtocolRegistry = require('protocol-registry');
 // Registers the Protocol
 ProtocolRegistry.register({
     protocol: 'testproto',
-    command: `node ${path.join(__dirname, './tester.js')}`,
+    command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     terminal: true
 }).then(()=>{
     // do something
@@ -69,7 +69,7 @@ ProtocolRegistry.register({
 
 ProtocolRegistry.register({
     protocol: 'testproto',
-    command: `node ${path.join(__dirname, './tester.js')}`,
+    command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     terminal: true
 },(err)=>{
     if(err){
@@ -80,7 +80,7 @@ ProtocolRegistry.register({
 
 ProtocolRegistry.register({
     protocol: 'testproto',
-    command: `node ${path.join(__dirname, './tester.js')}`,
+    command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     terminal: false // Terminal is set to false
 },(err)=>{
     if(err){
@@ -90,6 +90,25 @@ ProtocolRegistry.register({
 // The above code will run your command in background
 // You wont be able to see any logs
 // But if your program launches any UI / webpage / file will be visible
+
+const commands=`cd path/to/destination
+ls
+node ${path.join(__dirname, './tester.js')} $_URL_
+`;
+
+ProtocolRegistry.register({
+    protocol: 'testproto',
+    command: commands,
+    terminal: true // Terminal is set to false
+    script:true // This will save your commands in a script file and execute it when the protocol is hit.
+},(err)=>{
+    if(err){
+        // do something
+    }
+})
+// the above code will save your commands to a script file
+// and execute it when ever required
+// use this for multiline commands
 ```
 ### checkifExists(protocol)
 
@@ -113,6 +132,15 @@ ProtocolRegistry.checkifExists('testproto').then((res)=>{
 // Above snippet will check it already some app uses the given protocol or not
 ```
 
+### options
+Register function accept the below mentioned option
+| name           | types              | default      | Detail                                                                                                                                                                                                                                    |
+| ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| protocol       | String (required)  | NA           | Only alphabets allowed. Your command will be executed when any url starting with this protocol is opened i.e. "myapp://test","testproto://abcd?mode=dev", etc. And please make sure that the protocol is unique to your application.      |
+| command        | String (required)  | NA           | This command will be executed when the proctocol is called. **$_URL** mentioned anywhere in your command will be replaced by the url by which it is initiated.                                                                            |
+| override       | Boolean            | false        | If this is not true then you will get an error that protocol is already being used. But refrain from using this first check if the protocol exist or not then take action accordingly.                                                    |
+| terminal       | Boolean            | false        | If this is set true then first a terminal is opened and then your command is executed inside it.otherwise your command is executed in background and no logs appear but if your program launches any UI / webpage / file will be visible. |
+| script         | Boolean            | false        | If this is set true when your command is saved in a script and that script is executed. This option is recommended for multi-line commands and if your command uses any kind of quotes.                                                   |
 
 ## Supported platforms
 

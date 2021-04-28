@@ -11,7 +11,7 @@ const constants = {
         win32: '%1',
         linux: '%u',
         // eslint-disable-next-line quotes
-        darwin: `'" & this_URL & "'`
+        darwin: `" & this_URL & "`
     }
 };
 module.exports = constants;
