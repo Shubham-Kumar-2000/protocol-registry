@@ -54,11 +54,9 @@ const saveWrapperScript = (protocol, content) => {
 exports.handleWrapperScript = async (protocol, command) => {
     const contents = await getWrapperScriptContent(command);
     const scriptPath = saveWrapperScript(protocol, contents);
-    if (!process.platform === constants.platforms.windows) {
+    if (process.platform !== constants.platforms.windows) {
         const chmod = shell.exec('chmod +x ' + scriptPath);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
     }
-    return `${scriptPath} ${
-        constants.urlArgument[constants.platforms.windows]
-    }`;
+    return `${scriptPath} ${constants.urlArgument[process.platform]}`;
 };
