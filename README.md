@@ -1,6 +1,6 @@
 ﻿# Protocol-registry
 
-> Registers protocol like myapp:// to open your nodejs app from browsers. 
+> Registers protocol like:-  yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
 This is meant to be used in command-line tools and scripts, not in the browser.
 
@@ -26,7 +26,7 @@ const ProtocolRegistry = require('protocol-registry');
 console.log('Registering...');
 // Registers the Protocol
 ProtocolRegistry.register({
-    protocol: 'testproto', // set your app for testproto://**
+    protocol: 'testproto', // sets protocol for your command , testproto://**
     command: `node ${path.join(__dirname, './tester.js')} $_URL_`, // this will be executed with a extra argument %url from which it was initiated
     override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
     terminal: true, // Use this to run your command inside a terminal
@@ -139,9 +139,9 @@ Register function accept the below mentioned option
 | ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | protocol       | String (required)  | NA           | Only alphabets allowed. Your command will be executed when any url starting with this protocol is opened i.e. "myapp://test","testproto://abcd?mode=dev", etc. And please make sure that the protocol is unique to your application.      |
 | command        | String (required)  | NA           | This command will be executed when the proctocol is called. **$\_URL\_** mentioned anywhere in your command will be replaced by the url by which it is initiated.                                                                            |
-| override       | Boolean            | false        | If this is not true then you will get an error that protocol is already being used. But refrain from using this first check if the protocol exist or not then take action accordingly.                                                    |
-| terminal       | Boolean            | false        | If this is set true then first a terminal is opened and then your command is executed inside it.otherwise your command is executed in background and no logs appear but if your program launches any UI / webpage / file will be visible. |
-| script         | Boolean            | false        | If this is set true when your command is saved in a script and that script is executed. This option is recommended for multi-line commands and if your command uses any kind of quotes.                                                   |
+| override       | Boolean            | false        | If this is not true, then you will get an error that protocol is already being used. So, first check if the protocol exist or not then take action accordingly (Refrain from using it).                                                    |
+| terminal       | Boolean            | false        | If this is set true, then first a terminal is opened and then your command is executed inside it.otherwise your command is executed in background and no logs appear but if your program launches any UI / webpage / file will be visible. |
+| script         | Boolean            | false        | If this is set true, then your command is saved in a script and that script is executed. This option is recommended if you are using multi-line commands or your command uses any kind of quotes.                                                   |
 
 ## Supported platforms
 
@@ -170,7 +170,7 @@ $ type node
 > node is /usr/local/bin/node
 ```
 
-Then replace the address of node in original comand.
+Then replace the address of node in original command.
 So your final command will be :
 ```
 $ /usr/local/bin/node /path/to/index.js
