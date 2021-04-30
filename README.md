@@ -3,9 +3,11 @@
 > Registers protocol like:-  yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
 This is meant to be used in command-line tools and scripts, not in the browser.
-
-<img alt="Coding" src="https://user-images.githubusercontent.com/41825906/116656011-96d46080-a9a9-11eb-9107-03b2e58f94a3.gif" />
-
+<p align="center">
+    <br>
+	<img alt="Coding" width="500" src="https://user-images.githubusercontent.com/41825906/116656011-96d46080-a9a9-11eb-9107-03b2e58f94a3.gif" />
+    <br>
+</p>
 
 #### Why?
 
