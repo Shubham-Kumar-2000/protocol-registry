@@ -1,6 +1,6 @@
 ﻿# Protocol-registry
 
-> Registers protocol like:-  yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
+> Registers protocols like:-  yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
 This is meant to be used in command-line tools and scripts, not in the browser.
 <p align="center">
