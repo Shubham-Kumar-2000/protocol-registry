@@ -90,12 +90,22 @@ const register = async (options, cb) => {
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = shell.exec('chmod +x ' + scriptFilePath);
+        const chmod = await new Promise((resolve) =>
+            shell.exec('chmod +x ' + scriptFilePath, (code, stdout, stderr) =>
+                resolve({ code, stdout, stderr })
+            )
+        );
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = shell.exec('sudo ' + scriptFilePath, {
-            silent: true
-        });
+        const scriptResult = await new Promise((resolve) =>
+            shell.exec(
+                'sudo ' + scriptFilePath,
+                {
+                    silent: true
+                },
+                (code, stdout, stderr) => resolve({ code, stdout, stderr })
+            )
+        );
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
 
