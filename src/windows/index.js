@@ -120,7 +120,7 @@ const register = async (options, cb) => {
             commandRegistry.set(
                 Registry.DEFAULT_VALUE,
                 Registry.REG_SZ,
-                (terminal && 'cmd /c ') + command,
+                (terminal && 'cmd /k ') + command,
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
