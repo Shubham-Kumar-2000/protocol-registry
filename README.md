@@ -204,3 +204,6 @@ please check the [`ShellJS documentation`](https://www.npmjs.com/package/shelljs
 		</td>
 	</tr>
 </table>
+<p align="center">
+  <h2 align="center">Visitor's Count <img align="center" src="https://profile-counter.glitch.me/Shubham-Kumar-2000.protocol-registry/count.svg" alt="Visitor Count" /></h2>
+</p>
