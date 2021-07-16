@@ -33,8 +33,7 @@ declare namespace ProtocolRegistry {
      */
     script?: boolean
   }
-  export function register(params: RegisterOptions): Promise<void>
-  export function register(params: RegisterOptions, cb: (err: unknown) => void): void
+  export function register(params: RegisterOptions, cb?: (err?: Error) => void): void | Promise<void>
 
   export function checkifExists(protocol: string): Promise<boolean>
 }
