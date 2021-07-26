@@ -115,7 +115,7 @@ const register = async (options, cb) => {
 
         const scriptResult = await new Promise((resolve) =>
             shell.exec(
-                'sudo ' + scriptFilePath,
+                scriptFilePath,
                 {
                     silent: true
                 },
