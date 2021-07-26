@@ -62,11 +62,6 @@ const register = async (options, cb) => {
         const desktopFilePath = join(__dirname, '../../temp', desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
-        const setDefaultTemplate = join(
-            __dirname,
-            './templates',
-            'default.ejs'
-        );
         const scriptFilePath = join(__dirname, '../../temp', 'script.sh');
 
         command = await preProcessCommands(protocol, command, scriptRequired);
@@ -95,17 +90,6 @@ const register = async (options, cb) => {
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const setDefaultCommand = await new Promise((resolve, reject) => {
-            ejs.renderFile(
-                setDefaultTemplate,
-                { protocol, desktopFileName, desktopFilePath },
-                function (err, str) {
-                    if (err) return reject(err);
-                    resolve(str);
-                }
-            );
-        });
-
         const chmod = await new Promise((resolve) =>
             shell.exec('chmod +x ' + scriptFilePath, (code, stdout, stderr) =>
                 resolve({ code, stdout, stderr })
@@ -115,7 +99,7 @@ const register = async (options, cb) => {
 
         const scriptResult = await new Promise((resolve) =>
             shell.exec(
-                scriptFilePath,
+                `'${scriptFilePath}'`,
                 {
                     silent: true
                 },
@@ -124,19 +108,6 @@ const register = async (options, cb) => {
         );
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
-
-        const setDefaultResult = await new Promise((resolve) =>
-            shell.exec(
-                setDefaultCommand,
-                {
-                    silent: true
-                },
-                (code, stdout, stderr) => resolve({ code, stdout, stderr })
-            )
-        );
-
-        if (setDefaultResult.code != 0 || setDefaultResult.stderr)
-            throw new Error(setDefaultResult.stderr);
 
         fs.unlinkSync(scriptFilePath);
     } catch (e) {
