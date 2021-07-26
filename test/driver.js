@@ -4,7 +4,7 @@ const ProtocolRegistry = require('../src');
 
 console.log('Registering...');
 ProtocolRegistry.register({
-    protocol: 'test',
+    protocol: 'testproto',
     command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     override: true,
     terminal: true,
