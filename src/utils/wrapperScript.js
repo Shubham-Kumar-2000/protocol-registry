@@ -21,7 +21,9 @@ const getWrapperScriptContent = (command) => {
                     batchScriptContent +
                         subtituteCommand(
                             command,
-                            constants.urlArgument[constants.platforms.windows]
+                            constants.urlArgument[
+                                constants.platforms.windows + 'InScript'
+                            ]
                         )
                 );
             }

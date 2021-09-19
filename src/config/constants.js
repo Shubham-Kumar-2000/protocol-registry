@@ -9,6 +9,7 @@ const constants = {
     homedir: join(require('os').homedir(), '.protocol-registry'),
     urlArgument: {
         win32: '%1',
+        win32InScript: '%~1%',
         linux: '%u',
         // eslint-disable-next-line quotes
         darwin: `" & this_URL & "`
