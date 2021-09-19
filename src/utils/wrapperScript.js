@@ -57,7 +57,8 @@ exports.handleWrapperScript = async (protocol, command) => {
     if (process.platform !== constants.platforms.windows) {
         const chmod = shell.exec('chmod +x "' + scriptPath + '"');
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
-        return `'${scriptPath}' ${constants.urlArgument[process.platform]}`;
+        return `'${scriptPath}' '${constants.urlArgument[process.platform]}'`;
     }
-    return `"${scriptPath}" ${constants.urlArgument[process.platform]}`;
+    // eslint-disable-next-line no-useless-escape
+    return `"\"${scriptPath}\" \"${constants.urlArgument[process.platform]}\""`;
 };
