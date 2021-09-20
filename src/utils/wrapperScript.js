@@ -13,18 +13,35 @@ const subtituteCommand = (command, url) => {
     const identifier = '$_URL_';
     return command.split(identifier).join(url);
 };
+const subtituteWindowsCommand = (command) => {
+    let identifier = '"$_URL_"';
+    command = command
+        .split(identifier)
+        .join(
+            `"${
+                constants.urlArgument[constants.platforms.windows + 'InScript']
+            }"`
+        );
+    // eslint-disable-next-line quotes
+    identifier = "'$_URL_'";
+    command = command
+        .split(identifier)
+        .join(
+            `'${
+                constants.urlArgument[constants.platforms.windows + 'InScript']
+            }'`
+        );
+    return subtituteCommand(
+        command,
+        constants.urlArgument[constants.platforms.windows]
+    );
+};
 const getWrapperScriptContent = (command) => {
     return new Promise((resolve, reject) => {
         try {
             if (process.platform === constants.platforms.windows) {
                 return resolve(
-                    batchScriptContent +
-                        subtituteCommand(
-                            command,
-                            constants.urlArgument[
-                                constants.platforms.windows + 'InScript'
-                            ]
-                        )
+                    batchScriptContent + subtituteWindowsCommand(command)
                 );
             }
             ejs.renderFile(
@@ -61,6 +78,5 @@ exports.handleWrapperScript = async (protocol, command) => {
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
         return `'${scriptPath}' '${constants.urlArgument[process.platform]}'`;
     }
-    // eslint-disable-next-line no-useless-escape
-    return `"\"${scriptPath}\" \"${constants.urlArgument[process.platform]}\""`;
+    return `""${scriptPath}" "${constants.urlArgument[process.platform]}""`;
 };
