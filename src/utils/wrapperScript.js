@@ -78,5 +78,5 @@ exports.handleWrapperScript = async (protocol, command) => {
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
         return `'${scriptPath}' '${constants.urlArgument[process.platform]}'`;
     }
-    return `""${scriptPath}" "${constants.urlArgument[process.platform]}""`;
+    return `"${scriptPath}" "${constants.urlArgument[process.platform]}"`;
 };
