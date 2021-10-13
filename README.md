@@ -88,6 +88,7 @@ console.log(JSON.stringify(data, null, 4));
 ```
 
 </details>
+
 ## API
 
 At present it supports :
