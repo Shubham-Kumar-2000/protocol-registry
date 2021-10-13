@@ -50,9 +50,10 @@ ProtocolRegistry.register({
         </b>
     </summary>
 <br/>
-Insted you can use routing params to get the data from the url, described in the example below:
+Instead you can use routing params to get the data from the url, described in the example below:
 
 <b> Original Way : </b> `testproto://test?a=b&b=c`
+
 <b> Must use : </b> `testproto://test/-a/b/-b/c`
 As it is more CLI friendly.
 <b> Example : </b>
