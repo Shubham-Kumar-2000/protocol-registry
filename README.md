@@ -46,16 +46,20 @@ ProtocolRegistry.register({
 <details>
     <summary>
         <b>
-            Note : Refrain from using query to get data from the url, <i> click here to view an alternative. </i> 
+            Note : Refrain from using query to get data from the url, <i> click here to view some alternatives. </i> 
         </b>
     </summary>
 <br/>
+
+##### Alternative 1
+
 Instead you can use routing params to get the data from the url, described in the example below:
 
 <b> Original Way : </b> `testproto://test?a=b&b=c`
 
 <b> Must use : </b> `testproto://test/-a/b/-b/c`
-As it is more CLI friendly.
+<br/>As it is more CLI friendly.
+<br/>
 <b> Example : </b>
 
 ```js
@@ -86,6 +90,26 @@ console.log(JSON.stringify(data, null, 4));
 //    "mode": "testProto",
 //    "lang": "Hindi"
 // }
+```
+##### Alternative 2
+
+Use can use base64 encrytion to transmit data and decode it there.
+
+```js
+const encode = (str) => Buffer.from(str).toString('base64');
+const decode = (str) => Buffer.from(str, 'base64').toString();
+
+const protocol = 'testproto://';
+const encoded = encode(JSON.stringify({ mode: 'testProto', lang: 'Hindi' }));
+const url = `${protocol}${encoded}`;
+console.log(url);
+// testproto://eyJtb2RlIjoidGVzdFByb3RvIiwibGFuZyI6IkhpbmRpIn0=
+
+const data = url.split('://')[1];
+const decoded = JSON.parse(decode(data));
+console.log(decoded);
+// { mode: 'testProto', lang: 'Hindi' }
+
 ```
 
 </details>
