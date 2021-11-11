@@ -8,7 +8,7 @@
     "prepare": "husky install",
     "devStart": "nodemon src/index.js",
     "start": "node src/index.js",
-    "format": "./node_modules/.bin/eslint . --fix",
+    "format": "eslint . --fix",
     "postinstall": "node src/postinstall.js"
   },
   "engines": {
