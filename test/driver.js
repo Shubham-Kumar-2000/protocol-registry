@@ -12,3 +12,5 @@ ProtocolRegistry.register({
 }).then(async () => {
     console.log('Successfully registered');
 });
+
+ProtocolRegistry.checkifExists('testproto').then(console.log);
