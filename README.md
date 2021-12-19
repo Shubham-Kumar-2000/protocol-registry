@@ -15,7 +15,8 @@ This is meant to be used in command-line tools and scripts, not in the browser.
 - Actively maintained.
 - Handles Cross Platform.
 - Supports WSL paths to Windows apps.
-- Handles multi-line commands
+- Handles multi-line commands.
+- Works on electron.
 
 ## Install
 

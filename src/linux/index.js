@@ -1,7 +1,7 @@
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
-const shell = require('shelljs');
+const shell = require('../utils/shell');
 const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
@@ -12,20 +12,19 @@ const { registerSchema } = require('../validation/common');
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
-    return new Promise((resolve, reject) => {
-        const res = shell.exec(
-            `xdg-mime query default x-scheme-handler/${protocol}`,
-            { silent: true }
-        );
-        if (res.code !== 0 || res.stderr) {
-            return reject(res.stderr);
-        }
-        if (res.stdout && res.stdout.length > 0) {
-            return resolve(true);
-        }
-        return resolve(false);
-    });
+const checkifExists = async (protocol) => {
+    const res = await shell.exec(
+        `xdg-mime query default x-scheme-handler/${protocol}`,
+        { silent: true }
+    );
+
+    if (res.code !== 0 || res.stderr) {
+        throw new Error(res.stderr);
+    }
+    if (res.stdout && res.stdout.length > 0) {
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -90,22 +89,12 @@ const register = async (options, cb) => {
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = await new Promise((resolve) =>
-            shell.exec('chmod +x ' + scriptFilePath, (code, stdout, stderr) =>
-                resolve({ code, stdout, stderr })
-            )
-        );
+        const chmod = await shell.exec('chmod +x ' + scriptFilePath);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = await new Promise((resolve) =>
-            shell.exec(
-                `'${scriptFilePath}'`,
-                {
-                    silent: true
-                },
-                (code, stdout, stderr) => resolve({ code, stdout, stderr })
-            )
-        );
+        const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
+            silent: true
+        });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
 
