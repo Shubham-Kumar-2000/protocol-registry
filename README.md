@@ -115,6 +115,36 @@ console.log(decoded);
 
 </details>
 
+#### On Electron :
+
+On electron, you can use the protocol-registry to open your app through custom protocols.
+
+Note : Electron's built-in `app.setAsDefaultProtocolClient` is recommended to be used in production but as it has some issues in development you can use `ProtocolRegistry.register` instead while developing.
+
+```js
+const dev = require("electron-is-dev");
+const ProtocolRegistry = require("protocol-registry")
+
+if (dev) {
+  ProtocolRegistry
+    .register({
+      protocol: "testproto",
+      command: `"${process.execPath}" "${path.resolve(
+        process.argv[1]
+      )}" $URL`,
+      override: true,
+      script: true,
+      terminal: dev,
+    })
+    .then(console.log)
+    .catch(console.error);
+}else{
+  if (!app.isDefaultProtocolClient('testproto')) {
+    app.setAsDefaultProtocolClient('testproto');
+  }
+}
+```
+
 ## API
 
 At present it supports :
