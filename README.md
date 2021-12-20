@@ -136,7 +136,7 @@ if (dev) {
       script: true,
       terminal: dev,
     })
-    .then(console.log)
+    .then(() => console.log("Successfully registered"))
     .catch(console.error);
 } else {
   if (!app.isDefaultProtocolClient('testproto')) {
