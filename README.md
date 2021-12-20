@@ -131,14 +131,14 @@ if (dev) {
       protocol: "testproto",
       command: `"${process.execPath}" "${path.resolve(
         process.argv[1]
-      )}" $URL`,
+      )}" $_URL_`,
       override: true,
       script: true,
       terminal: dev,
     })
     .then(console.log)
     .catch(console.error);
-}else{
+} else {
   if (!app.isDefaultProtocolClient('testproto')) {
     app.setAsDefaultProtocolClient('testproto');
   }
