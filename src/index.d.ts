@@ -32,6 +32,13 @@ declare namespace ProtocolRegistry {
      * This option is recommended if you are using multi-line commands or your command uses any kind of quotes.
      */
     script?: boolean;
+
+    /**
+     * **default false.**
+     * If this is set true, then the script will try to register the protocol for all users on the system.
+     * It is required to run node as administartor (elevated).
+     */
+     allusers?: boolean;
   };
   export function register(params: RegisterOptions): Promise<void>;
   export function register(
