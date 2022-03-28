@@ -29,7 +29,7 @@ const run_script = (command, args, callback) => {
 const checkIfXDGInstalled = () => {
     try {
         child.execSync('xdg-mime --version', {
-            stdio: 'pipe'
+            stdio: 'pipe',
         });
         return true;
     } catch (e) {
@@ -53,7 +53,7 @@ const installXdgUtils = () => {
                 }
                 // eslint-disable-next-line no-process-exit
                 process.exit(0);
-            }
+            },
         );
         setTimeout(() => {
             if (killed) return;

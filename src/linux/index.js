@@ -1,31 +1,37 @@
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
-const shell = require('shelljs');
+const shell = require('../utils/shell');
 const { preProcessCommands } = require('../utils/processCommand');
-
+const { isRoot } = require('../utils/isRoot');
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
+const PermissonDeniedError = require('../errors/permissonDeniedError');
 
 /**
  * Checks if the given protocal already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
+ * @param {boolean=} allUsers - Check for all users
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
-    return new Promise((resolve, reject) => {
-        const res = shell.exec(
-            `xdg-mime query default x-scheme-handler/${protocol}`,
-            { silent: true }
-        );
-        if (res.code !== 0 || res.stderr) {
-            return reject(res.stderr);
-        }
-        if (res.stdout && res.stdout.length > 0) {
-            return resolve(true);
-        }
-        return resolve(false);
-    });
+const checkifExists = async (protocol, allUsers) => {
+    if (allUsers && !isRoot)
+        throw new PermissonDeniedError('Permisson Denied');
+
+    const res = await shell.exec(
+        `${
+            allUsers ? 'sudo' : ''
+        } xdg-mime query default x-scheme-handler/${protocol}`,
+        { silent: true },
+    );
+
+    if (res.code !== 0 || res.stderr) {
+        throw new Error(res.stderr);
+    }
+    if (res.stdout && res.stdout.length > 0) {
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -36,6 +42,7 @@ const checkifExists = (protocol) => {
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
+ * @param {boolean=} options.allUsers - If set true then your command will be registered for all users
  * @param {function (err)} cb - callback function Optional
  */
 
@@ -46,13 +53,18 @@ const register = async (options, cb) => {
         protocol,
         override,
         terminal,
-        script: scriptRequired
+        script: scriptRequired,
+        allUsers,
     } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
+
     try {
-        const exist = await checkifExists(protocol);
+        if (allUsers && !isRoot)
+            throw new PermissonDeniedError('Permisson Denied');
+
+        const exist = await checkifExists(protocol, allUsers);
 
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
@@ -73,7 +85,7 @@ const register = async (options, cb) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(desktopFilePath, desktopFileContent);
@@ -81,31 +93,21 @@ const register = async (options, cb) => {
         const scriptContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 scriptTemplate,
-                { protocol, desktopFileName, desktopFilePath },
+                { protocol, desktopFileName, desktopFilePath, allUsers },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = await new Promise((resolve) =>
-            shell.exec('chmod +x ' + scriptFilePath, (code, stdout, stderr) =>
-                resolve({ code, stdout, stderr })
-            )
-        );
+        const chmod = await shell.exec('chmod +x ' + scriptFilePath);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = await new Promise((resolve) =>
-            shell.exec(
-                `'${scriptFilePath}'`,
-                {
-                    silent: true
-                },
-                (code, stdout, stderr) => resolve({ code, stdout, stderr })
-            )
-        );
+        const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
+            silent: true,
+        });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
 
@@ -118,5 +120,5 @@ const register = async (options, cb) => {
 };
 module.exports = {
     checkifExists,
-    register
+    register,
 };

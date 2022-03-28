@@ -1,7 +1,7 @@
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
-const shell = require('shelljs');
+const shell = require('../utils/shell');
 
 const constants = require('../config/constants');
 const { preProcessCommands } = require('../utils/processCommand');
@@ -11,30 +11,29 @@ const { registerSchema } = require('../validation/common');
 const { homedir } = constants;
 
 if (process.platform === constants.platforms.macos) {
-    const modRes = shell.exec(
-        `chmod +x ${join(__dirname, './defaultAppExist.sh')}`
-    );
-    if (modRes.code != 0) {
-        throw new Error(modRes.stderr);
-    }
+    shell
+        .exec(`chmod +x ${join(__dirname, './defaultAppExist.sh')}`)
+        .then((modRes) => {
+            if (modRes.code != 0) {
+                throw new Error(modRes.stderr);
+            }
+        });
 }
 /**
  * Checks if the given protocal already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
-    return new Promise((resolve, reject) => {
-        const res = shell.exec(
-            `${join(__dirname, './defaultAppExist.sh')} "${protocol}://test"`,
-            { silent: true }
-        );
-        if (res.code !== 0 || res.stderr) {
-            return reject(res.stderr);
-        }
-        if (res.stdout.trim() === 'true') return resolve(true);
-        return resolve(false);
-    });
+const checkifExists = async (protocol) => {
+    const res = await shell.exec(
+        `${join(__dirname, './defaultAppExist.sh')} "${protocol}://test"`,
+        { silent: true },
+    );
+    if (res.code !== 0 || res.stderr) {
+        throw new Error(res.stderr);
+    }
+    if (res.stdout.trim() === 'true') return true;
+    return false;
 };
 
 /**
@@ -55,7 +54,7 @@ const register = async (options, cb) => {
         protocol,
         override,
         terminal,
-        script: scriptRequired
+        script: scriptRequired,
     } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
@@ -79,7 +78,7 @@ const register = async (options, cb) => {
         const urlAppSource = join(
             __dirname,
             '../../temp',
-            `URL-${protocol}.txt`
+            `URL-${protocol}.txt`,
         );
         const urlAppPath = join(homedir, `URL-${protocol}.app`);
 
@@ -93,7 +92,7 @@ const register = async (options, cb) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(appSource, appSourceContent);
@@ -105,7 +104,7 @@ const register = async (options, cb) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(urlAppSource, urlAppSourceContent);
@@ -119,32 +118,22 @@ const register = async (options, cb) => {
                     urlAppPath,
                     urlAppSource,
                     plistMutator,
-                    protocol
+                    protocol,
                 },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = await new Promise((resolve) =>
-            shell.exec('chmod +x ' + scriptFilePath, (code, stdout, stderr) =>
-                resolve({ code, stdout, stderr })
-            )
-        );
+        const chmod = await shell.exec('chmod +x ' + scriptFilePath);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = await new Promise((resolve) =>
-            shell.exec(
-                scriptFilePath,
-                {
-                    silent: true
-                },
-                (code, stdout, stderr) => resolve({ code, stdout, stderr })
-            )
-        );
+        const scriptResult = await shell.exec(scriptFilePath, {
+            silent: true,
+        });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
 
@@ -159,5 +148,5 @@ const register = async (options, cb) => {
 };
 module.exports = {
     checkifExists,
-    register
+    register,
 };

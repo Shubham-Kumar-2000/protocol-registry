@@ -1,4 +1,9 @@
 set -e;
-mv '<%- desktopFilePath %>'  ~/.local/share/applications
-cd ~/.local/share/applications
+<%if (allUsers) { %>
+    mv '<%- desktopFilePath %>' /usr/share/applications/
+    cd /usr/share/applications/
+<% } else { %>
+    mv '<%- desktopFilePath %>'  ~/.local/share/applications
+    cd ~/.local/share/applications
+<% } %>
 xdg-mime default <%- desktopFileName %> x-scheme-handler/<%= protocol %>

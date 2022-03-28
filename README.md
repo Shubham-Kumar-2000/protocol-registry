@@ -15,7 +15,8 @@ This is meant to be used in command-line tools and scripts, not in the browser.
 - Actively maintained.
 - Handles Cross Platform.
 - Supports WSL paths to Windows apps.
-- Handles multi-line commands
+- Handles multi-line commands.
+- Works on electron.
 
 ## Install
 
@@ -46,15 +47,20 @@ ProtocolRegistry.register({
 <details>
     <summary>
         <b>
-            Note : Refrain from using query to get data from the url, <i> click here to view an alternative. </i> 
+            Note : Refrain from using query to get data from the url, <i> click here to view some alternatives. </i> 
         </b>
     </summary>
 <br/>
-Insted you can use routing params to get the data from the url, described in the example below:
+
+##### Alternative 1
+
+Instead you can use routing params to get the data from the url, described in the example below:
 
 <b> Original Way : </b> `testproto://test?a=b&b=c`
+
 <b> Must use : </b> `testproto://test/-a/b/-b/c`
-As it is more CLI friendly.
+<br/>As it is more CLI friendly.
+<br/>
 <b> Example : </b>
 
 ```js
@@ -86,8 +92,58 @@ console.log(JSON.stringify(data, null, 4));
 //    "lang": "Hindi"
 // }
 ```
+##### Alternative 2
+
+Use can use base64 encrytion to transmit data and decode it there.
+
+```js
+const encode = (str) => Buffer.from(str).toString('base64');
+const decode = (str) => Buffer.from(str, 'base64').toString();
+
+const protocol = 'testproto://';
+const encoded = encode(JSON.stringify({ mode: 'testProto', lang: 'Hindi' }));
+const url = `${protocol}${encoded}`;
+console.log(url);
+// testproto://eyJtb2RlIjoidGVzdFByb3RvIiwibGFuZyI6IkhpbmRpIn0=
+
+const data = url.split('://')[1];
+const decoded = JSON.parse(decode(data));
+console.log(decoded);
+// { mode: 'testProto', lang: 'Hindi' }
+
+```
 
 </details>
+
+#### On Electron :
+
+On electron, you can use the protocol-registry to open your app through custom protocols.
+
+Note : Electron's built-in `app.setAsDefaultProtocolClient` is recommended to be used in production but as it has some issues in development you can use `ProtocolRegistry.register` instead while developing.
+
+```js
+const dev = require("electron-is-dev");
+const ProtocolRegistry = require("protocol-registry")
+
+if (dev) {
+  ProtocolRegistry
+    .register({
+      protocol: "testproto",
+      command: `"${process.execPath}" "${path.resolve(
+        process.argv[1]
+      )}" $_URL_`,
+      override: true,
+      script: true,
+      terminal: dev,
+    })
+    .then(() => console.log("Successfully registered"))
+    .catch(console.error);
+} else {
+  if (!app.isDefaultProtocolClient('testproto')) {
+    app.setAsDefaultProtocolClient('testproto');
+  }
+}
+```
 
 ## API
 

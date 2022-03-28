@@ -12,5 +12,5 @@ const preProcessCommands = async (protocol, command, scriptRequired) => {
     return newCommand;
 };
 module.exports = {
-    preProcessCommands
+    preProcessCommands,
 };
