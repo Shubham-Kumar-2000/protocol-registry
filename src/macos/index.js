@@ -27,7 +27,7 @@ if (process.platform === constants.platforms.macos) {
 const checkifExists = async (protocol) => {
     const res = await shell.exec(
         `${join(__dirname, './defaultAppExist.sh')} "${protocol}://test"`,
-        { silent: true }
+        { silent: true },
     );
     if (res.code !== 0 || res.stderr) {
         throw new Error(res.stderr);
@@ -54,7 +54,7 @@ const register = async (options, cb) => {
         protocol,
         override,
         terminal,
-        script: scriptRequired
+        script: scriptRequired,
     } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
@@ -78,7 +78,7 @@ const register = async (options, cb) => {
         const urlAppSource = join(
             __dirname,
             '../../temp',
-            `URL-${protocol}.txt`
+            `URL-${protocol}.txt`,
         );
         const urlAppPath = join(homedir, `URL-${protocol}.app`);
 
@@ -92,7 +92,7 @@ const register = async (options, cb) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(appSource, appSourceContent);
@@ -104,7 +104,7 @@ const register = async (options, cb) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(urlAppSource, urlAppSourceContent);
@@ -118,12 +118,12 @@ const register = async (options, cb) => {
                     urlAppPath,
                     urlAppSource,
                     plistMutator,
-                    protocol
+                    protocol,
                 },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
@@ -132,7 +132,7 @@ const register = async (options, cb) => {
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
         const scriptResult = await shell.exec(scriptFilePath, {
-            silent: true
+            silent: true,
         });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
@@ -148,5 +148,5 @@ const register = async (options, cb) => {
 };
 module.exports = {
     checkifExists,
-    register
+    register,
 };

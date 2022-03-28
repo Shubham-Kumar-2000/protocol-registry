@@ -4,7 +4,7 @@ const constants = {
     platforms: {
         windows: 'win32',
         linux: 'linux',
-        macos: 'darwin'
+        macos: 'darwin',
     },
     homedir: join(require('os').homedir(), '.protocol-registry'),
     urlArgument: {
@@ -12,7 +12,7 @@ const constants = {
         win32InScript: '%~1%',
         linux: '%u',
         // eslint-disable-next-line quotes
-        darwin: `" & this_URL & "`
-    }
+        darwin: `" & this_URL & "`,
+    },
 };
 module.exports = constants;

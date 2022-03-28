@@ -8,5 +8,5 @@ exports.registerSchema = Joi.object({
     override: Joi.boolean(),
     terminal: Joi.boolean(),
     script: Joi.boolean(),
-    allusers: Joi.boolean()
+    allUsers: Joi.boolean(),
 });

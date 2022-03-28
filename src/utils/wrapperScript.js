@@ -20,7 +20,7 @@ const subtituteWindowsCommand = (command) => {
         .join(
             `"${
                 constants.urlArgument[constants.platforms.windows + 'InScript']
-            }"`
+            }"`,
         );
     // eslint-disable-next-line quotes
     identifier = "'$_URL_'";
@@ -29,11 +29,11 @@ const subtituteWindowsCommand = (command) => {
         .join(
             `'${
                 constants.urlArgument[constants.platforms.windows + 'InScript']
-            }'`
+            }'`,
         );
     return subtituteCommand(
         command,
-        constants.urlArgument[constants.platforms.windows]
+        constants.urlArgument[constants.platforms.windows],
     );
 };
 const getWrapperScriptContent = (command) => {
@@ -41,7 +41,7 @@ const getWrapperScriptContent = (command) => {
         try {
             if (process.platform === constants.platforms.windows) {
                 return resolve(
-                    batchScriptContent + subtituteWindowsCommand(command)
+                    batchScriptContent + subtituteWindowsCommand(command),
                 );
             }
             ejs.renderFile(
@@ -50,7 +50,7 @@ const getWrapperScriptContent = (command) => {
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
-                }
+                },
             );
             return;
         } catch (e) {
@@ -64,7 +64,7 @@ const saveWrapperScript = (protocol, content) => {
         homedir,
         `./${protocol}Wrapper.${
             process.platform === constants.platforms.windows ? 'bat' : 'sh'
-        }`
+        }`,
     );
     writeFileSync(wrapperScriptPath, content);
     return wrapperScriptPath;

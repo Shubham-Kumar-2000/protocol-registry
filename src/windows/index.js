@@ -1,4 +1,5 @@
 const Registry = require('winreg');
+const PermissonDeniedError = require('../errors/permissonDeniedError');
 const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
@@ -7,15 +8,15 @@ const { registerSchema } = require('../validation/common');
 /**
  * Checks if the given protocal already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
- * @param {boolean=} allusers - Check for all users
+ * @param {boolean=} allUsers - Check for all users
  * @returns {Promise}
  */
-const checkifExists = (protocol, allusers) => {
-    const hive = allusers ? Registry.HKLM : Registry.HKCU;
+const checkifExists = (protocol, allUsers) => {
+    const hive = allUsers ? Registry.HKLM : Registry.HKCU;
     return new Promise((resolve, reject) => {
         const registry = new Registry({
             hive,
-            key: '\\Software\\Classes\\' + protocol
+            key: '\\Software\\Classes\\' + protocol,
         });
         registry.keyExists((err, exist) => {
             if (err) return reject(err);
@@ -32,7 +33,7 @@ const checkifExists = (protocol, allusers) => {
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
- * @param {boolean=} options.allusers - If set true then protocol will be registered for all users. Administrator elevation is required.
+ * @param {boolean=} options.allUsers - If set true then protocol will be registered for all users. Administrator elevation is required.
  * @param {function (err)} cb - callback function Optional
  */
 
@@ -43,8 +44,8 @@ const register = async (options, cb) => {
         protocol,
         override,
         terminal,
-        allusers,
-        script: scriptRequired
+        allUsers,
+        script: scriptRequired,
     } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
@@ -63,14 +64,14 @@ const register = async (options, cb) => {
     // Software\Classes", which is inherited by "HKEY_CLASSES_ROOT"
     // anyway, and can be written by unprivileged users.
     try {
-        const hive = allusers ? Registry.HKLM : Registry.HKCU;
+        const hive = allUsers ? Registry.HKLM : Registry.HKCU;
         const keyPath = '\\Software\\Classes\\' + protocol;
         const registry = new Registry({
             hive,
-            key: keyPath
+            key: keyPath,
         });
 
-        const exist = await checkifExists(protocol, allusers);
+        const exist = await checkifExists(protocol, allUsers);
 
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
@@ -78,7 +79,7 @@ const register = async (options, cb) => {
                 registry.destroy((err) => {
                     if (err) return reject(err);
                     return resolve(true);
-                })
+                }),
             );
         }
         command = await preProcessCommands(protocol, command, scriptRequired);
@@ -87,7 +88,7 @@ const register = async (options, cb) => {
             registry.create((err) => {
                 if (err) return reject(err);
                 return resolve(true);
-            })
+            }),
         );
 
         const urlDecl = 'URL:' + protocol;
@@ -101,8 +102,8 @@ const register = async (options, cb) => {
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
-                }
-            )
+                },
+            ),
         );
         await new Promise((resolve, reject) =>
             registry.set(
@@ -112,13 +113,13 @@ const register = async (options, cb) => {
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
-                }
-            )
+                },
+            ),
         );
 
         const commandRegistry = new Registry({
             hive,
-            key: cmdPath
+            key: cmdPath,
         });
 
         await new Promise((resolve, reject) =>
@@ -129,19 +130,22 @@ const register = async (options, cb) => {
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
-                }
-            )
+                },
+            ),
         );
     } catch (e) {
-        if(allusers && e.message && e.message.match(/access.*denied/gi)) {
-            e = new Error('Permission denied. Run node as administrator or disable "allusers" in options.')
+        let error = e;
+        if (allUsers && e.message && e.message.match(/access.*denied/gi)) {
+            error = new PermissonDeniedError(
+                'Permission denied. Run node as administrator or disable "allUsers" in options.',
+            );
         }
-        if (!cb) throw e;
-        res = e;
+        if (!cb) throw error;
+        res = error;
     }
     if (cb) return cb(res);
 };
 module.exports = {
     checkifExists,
-    register
+    register,
 };

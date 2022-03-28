@@ -5,26 +5,27 @@
         "node": true
     },
     "extends": ["eslint:recommended", "plugin:node/recommended"],
-    "plugins": ["prettier"],
     "parserOptions": {
         "ecmaVersion": 12
     },
     "rules": {
         "node/shebang": "error",
         "indent": ["error", 4],
+        "quotes": ["error", "single", { "avoidEscape": true }],
         "prefer-const": ["error", {
             "destructuring": "any",
             "ignoreReadBeforeAssign": false
         }],
-        "quotes": ["error", "single"],
         "semi": ["error", "always"],
+        "object-curly-spacing": ["error", "always"],
         "linebreak-style": 0,
         "no-use-before-define": 0,
         "no-tabs": 0,
         "no-underscore-dangle": 0,
         "space-before-function-paren": 0,
         "quote-props": 0,
-        "comma-dangle": 0,
+        "comma-dangle": ["error", "always-multiline"],
+        "array-bracket-spacing": ["error", "always"],
         "operator-linebreak": 0,
         "new-cap": 0,
         "arrow-parens": 0,
@@ -40,19 +41,6 @@
             "error",
             {
                 "allowModules": ["chalk"]
-            }
-        ],
-        "prettier/prettier": [
-            "error",
-            {
-                "singleQuote": true,
-                "trailingComma": "none",
-                "bracketSpacing": true,
-                "jsxBracketSameLine": true,
-                "parser": "flow",
-                "semi": true,
-                "endOfLine":"auto",
-                "tabWidth":4
             }
         ]
     }
