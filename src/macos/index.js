@@ -12,7 +12,7 @@ const { homedir } = constants;
 
 if (process.platform === constants.platforms.macos) {
     shell
-        .exec(`chmod +x ${join(__dirname, './defaultAppExist.sh')}`)
+        .exec(`chmod +x '${join(__dirname, './defaultAppExist.sh')}'`)
         .then((modRes) => {
             if (modRes.code != 0) {
                 throw new Error(modRes.stderr);
@@ -26,7 +26,7 @@ if (process.platform === constants.platforms.macos) {
  */
 const checkifExists = async (protocol) => {
     const res = await shell.exec(
-        `${join(__dirname, './defaultAppExist.sh')} "${protocol}://test"`,
+        `'${join(__dirname, './defaultAppExist.sh')}' "${protocol}://test"`,
         { silent: true }
     );
     if (res.code !== 0 || res.stderr) {
@@ -128,10 +128,10 @@ const register = async (options, cb) => {
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = await shell.exec('chmod +x ' + scriptFilePath);
+        const chmod = await shell.exec(`chmod +x '${scriptFilePath}'`);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
-        const scriptResult = await shell.exec(scriptFilePath, {
+        const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
             silent: true
         });
         if (scriptResult.code != 0 || scriptResult.stderr)

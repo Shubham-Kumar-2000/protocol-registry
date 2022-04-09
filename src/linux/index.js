@@ -89,7 +89,7 @@ const register = async (options, cb) => {
         });
         fs.writeFileSync(scriptFilePath, scriptContent);
 
-        const chmod = await shell.exec('chmod +x ' + scriptFilePath);
+        const chmod = await shell.exec(`chmod +x  '${scriptFilePath}'`);
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
 
         const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
