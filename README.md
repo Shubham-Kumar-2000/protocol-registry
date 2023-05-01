@@ -39,6 +39,7 @@ ProtocolRegistry.register({
   override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
   terminal: true, // Use this to run your command inside a terminal
   script: false,
+  scriptName: 'my-custom-script-name' // Custom script name.
 }).then(async () => {
   console.log("Successfully registered");
 });
@@ -94,7 +95,7 @@ console.log(JSON.stringify(data, null, 4));
 ```
 ##### Alternative 2
 
-Use can use base64 encrytion to transmit data and decode it there.
+Use can use base64 encryption to transmit data and decode it there.
 
 ```js
 const encode = (str) => Buffer.from(str).toString('base64');
@@ -177,7 +178,7 @@ ProtocolRegistry.register({
 // Above will run tester.js when testproto://** is called as
 // node .../tester.js testproto://**
 // you can further parse the url to run in different modes
-// As overide is not passed true it will throw an error is protocol already exists
+// As override is not passed true it will throw an error is protocol already exists
 
 ProtocolRegistry.register(
   {
@@ -220,6 +221,7 @@ ProtocolRegistry.register(
     command: commands,
     terminal: true, // Terminal is set to false
     script: true, // This will save your commands in a script file and execute it when the protocol is hit.
+    scriptName: 'my-custom-script-name' // This is the name of the script file that will be created if script option is set true.
   },
   (err) => {
     if (err) {
@@ -262,10 +264,11 @@ Register function accept the below mentioned option
 | name | types | default | details |
 | ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | protocol | String (required) | NA | Only alphabets allowed. Your command will be executed when any url starting with this protocol is opened i.e. "myapp://test","testproto://abcd?mode=dev", etc. And please make sure that the protocol is unique to your application. |
-| command | String (required) | NA | This command will be executed when the proctocol is called. **$\_URL\_** mentioned anywhere in your command will be replaced by the url by which it is initiated. |
+| command | String (required) | NA | This command will be executed when the protocol is called. **$\_URL\_** mentioned anywhere in your command will be replaced by the url by which it is initiated. |
 | override | Boolean | false | If this is not true, then you will get an error that protocol is already being used. So, first check if the protocol exist or not then take action accordingly (Refrain from using it). |
 | terminal | Boolean | false | If this is set true, then first a terminal is opened and then your command is executed inside it.otherwise your command is executed in background and no logs appear but if your program launches any UI / webpage / file, it will be visible. |
 | script | Boolean | false | If this is set true, then your command is saved in a script and that script is executed. This option is recommended if you are using multi-line commands or your command uses any kind of quotes. |
+| scriptName | String | `${protocol}` | This is the name of the script file that will be created if script option is set true. |
 
 ## Supported platforms
 
