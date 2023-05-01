@@ -30,6 +30,7 @@ const checkifExists = (protocol) => {
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
+ * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
  * @param {function (err)} cb - callback function Optional
  */
 
@@ -76,7 +77,12 @@ const register = async (options, cb) => {
                 })
             );
         }
-        command = await preProcessCommands(protocol, command, scriptRequired);
+        command = await preProcessCommands(
+            protocol,
+            command,
+            scriptRequired,
+            options.scriptName
+        );
 
         await new Promise((resolve, reject) =>
             registry.create((err) => {
