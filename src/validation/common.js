@@ -7,5 +7,8 @@ exports.registerSchema = Joi.object({
     command: Joi.string().required(),
     override: Joi.boolean(),
     terminal: Joi.boolean(),
-    script: Joi.boolean()
+    script: Joi.boolean(),
+    scriptName: Joi.string()
+        .min(3)
+        .regex(/^[a-zA-Z0-9]+$/)
 });

@@ -1,7 +1,7 @@
 const constants = require('../config/constants');
 const ejs = require('ejs');
 const { join } = require('path');
-const { writeFileSync } = require('fs');
+const { writeFileSync, existsSync, rmdirSync, mkdirSync } = require('fs');
 const shell = require('./shell');
 
 const { homedir } = constants;
@@ -59,10 +59,17 @@ const getWrapperScriptContent = (command) => {
     });
 };
 
-const saveWrapperScript = (protocol, content) => {
+const saveWrapperScript = (protocol, content, scriptName) => {
+    if (existsSync(join(homedir, `./${protocol}`))) {
+        rmdirSync(join(homedir, `./${protocol}`), {
+            recursive: true,
+            force: true
+        });
+    }
+    mkdirSync(join(homedir, `./${protocol}`));
     const wrapperScriptPath = join(
         homedir,
-        `./${protocol}Wrapper.${
+        `./${protocol}/${scriptName || protocol}.${
             process.platform === constants.platforms.windows ? 'bat' : 'sh'
         }`
     );
@@ -70,9 +77,9 @@ const saveWrapperScript = (protocol, content) => {
     return wrapperScriptPath;
 };
 
-exports.handleWrapperScript = async (protocol, command) => {
+exports.handleWrapperScript = async (protocol, command, scriptName) => {
     const contents = await getWrapperScriptContent(command);
-    const scriptPath = saveWrapperScript(protocol, contents);
+    const scriptPath = saveWrapperScript(protocol, contents, scriptName);
     if (process.platform !== constants.platforms.windows) {
         const chmod = await shell.exec('chmod +x "' + scriptPath + '"');
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);
