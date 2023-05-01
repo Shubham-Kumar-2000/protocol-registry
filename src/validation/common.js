@@ -10,5 +10,5 @@ exports.registerSchema = Joi.object({
     script: Joi.boolean(),
     scriptName: Joi.string()
         .min(3)
-        .regex(/^[a-zA-Z0-9]+$/)
+        .regex(/^[a-zA-Z0-9-]+$/)
 });

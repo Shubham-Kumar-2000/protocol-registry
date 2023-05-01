@@ -1,7 +1,7 @@
 const constants = require('../config/constants');
 const ejs = require('ejs');
 const { join } = require('path');
-const { writeFileSync, existsSync, rmdirSync, mkdirSync } = require('fs');
+const { writeFileSync, existsSync, rmSync, mkdirSync } = require('fs');
 const shell = require('./shell');
 
 const { homedir } = constants;
@@ -61,7 +61,7 @@ const getWrapperScriptContent = (command) => {
 
 const saveWrapperScript = (protocol, content, scriptName) => {
     if (existsSync(join(homedir, `./${protocol}`))) {
-        rmdirSync(join(homedir, `./${protocol}`), {
+        rmSync(join(homedir, `./${protocol}`), {
             recursive: true,
             force: true
         });

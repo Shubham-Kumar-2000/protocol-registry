@@ -8,7 +8,8 @@ ProtocolRegistry.register({
     command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     override: true,
     terminal: true,
-    script: true
+    script: true,
+    scriptName: 'my-custom-script-name'
 }).then(async () => {
     console.log('Successfully registered');
 });

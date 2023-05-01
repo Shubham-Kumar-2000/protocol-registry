@@ -32,6 +32,12 @@ declare namespace ProtocolRegistry {
      * This option is recommended if you are using multi-line commands or your command uses any kind of quotes.
      */
     script?: boolean;
+    /**
+     * **default ${protocol}.**
+     * This is the name of the script file that will be created if script option is set true.
+     * It is recommended to use the default value.
+     */
+    scriptName?: string;
   };
   export function register(params: RegisterOptions): Promise<void>;
   export function register(
