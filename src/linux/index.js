@@ -22,17 +22,22 @@ const checkifExists = async (protocol) => {
         KDE returns exit code 4 if the protocol is not registered
         see https://cgit.freedesktop.org/xdg/xdg-utils/tree/scripts/xdg-mime.in#n461
     */
-    const isKDE = process.env.XDG_CURRENT_DESKTOP === "KDE";
+    const isKDE = process.env.XDG_CURRENT_DESKTOP === 'KDE';
     const kdeNoProtoExitCode = 4;
 
-    if((res.code === 0 && !res.stderr) || (isKDE && res.code === kdeNoProtoExitCode)) {
-        if (res.stdout && res.stdout.length > 0) {
-            return true;
-        }
+    if (isKDE && res.code === kdeNoProtoExitCode) {
         return false;
-    } else {
+    }
+
+    if (res.code !== 0 || res.stderr) {
         throw new Error(res.stderr);
     }
+
+    if (res.stdout && res.stdout.length > 0) {
+        return true;
+    }
+
+    return false;
 };
 
 /**
