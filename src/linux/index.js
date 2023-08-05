@@ -3,7 +3,7 @@ const fs = require('fs');
 const { join } = require('path');
 const shell = require('../utils/shell');
 const { preProcessCommands } = require('../utils/processCommand');
-
+const constants = require('../config/constants');
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
 
@@ -22,10 +22,10 @@ const checkifExists = async (protocol) => {
         KDE returns exit code 4 if the protocol is not registered
         see https://cgit.freedesktop.org/xdg/xdg-utils/tree/scripts/xdg-mime.in#n461
     */
-    const isKDE = process.env.XDG_CURRENT_DESKTOP === 'KDE';
-    const kdeNoProtoExitCode = 4;
-
-    if (isKDE && res.code === kdeNoProtoExitCode) {
+    if (
+        constants.desktops.current === 'KDE' &&
+        res.code === constants.desktops.KDE.noProtoExitCode
+    ) {
         return false;
     }
 
