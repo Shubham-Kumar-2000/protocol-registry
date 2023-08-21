@@ -39,7 +39,7 @@
     "ejs": "^3.1.8",
     "is-wsl": "^2.2.0",
     "joi": "^17.6.0",
-    "plist": "^3.0.2",
+    "plist": "^3.1.0",
     "winreg": "^1.2.4"
   },
   "devDependencies": {
