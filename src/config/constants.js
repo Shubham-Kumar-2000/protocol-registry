@@ -6,6 +6,12 @@ const constants = {
         linux: 'linux',
         macos: 'darwin'
     },
+    desktops: {
+        current: process.env.XDG_CURRENT_DESKTOP,
+        KDE: {
+            noProtoExitCode: 4
+        }
+    },
     homedir: join(require('os').homedir(), '.protocol-registry'),
     urlArgument: {
         win32: '%1',
