@@ -40,7 +40,7 @@
     "is-wsl": "^2.2.0",
     "joi": "^17.9.1",
     "plist": "^3.1.0",
-    "winreg": "^1.2.4"
+    "winreg": "^1.2.5"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
