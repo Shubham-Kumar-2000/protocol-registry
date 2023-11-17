@@ -72,10 +72,10 @@ const register = async (options, cb) => {
         }
 
         const desktopFileName = `${protocol}.desktop`;
-        const desktopFilePath = join(__dirname, '../../temp', desktopFileName);
+        const desktopFilePath = join(constants.tmpdir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
-        const scriptFilePath = join(__dirname, '../../temp', 'script.sh');
+        const scriptFilePath = join(constants.tmpdir, 'script.sh');
 
         command = await preProcessCommands(
             protocol,
@@ -116,11 +116,11 @@ const register = async (options, cb) => {
         });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
-
-        fs.unlinkSync(scriptFilePath);
     } catch (e) {
         if (!cb) throw e;
         res = e;
+    } finally {
+        fs.rmSync(constants.tmpdir, { recursive: true, force: true });
     }
     if (cb) return cb(res);
 };
