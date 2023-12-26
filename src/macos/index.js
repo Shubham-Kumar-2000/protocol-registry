@@ -10,6 +10,8 @@ const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
 const { homedir } = constants;
 
+const replacePath = require('../utils/replaceWithExactPath');
+
 if (process.platform === constants.platforms.macos) {
     shell
         .exec(`chmod +x '${join(__dirname, './defaultAppExist.sh')}'`)
@@ -58,6 +60,9 @@ const register = async (options, cb) => {
         script: scriptRequired
     } = validOptions;
     let { command } = validOptions;
+
+    if (!terminal) command = replacePath(command);
+
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     try {
