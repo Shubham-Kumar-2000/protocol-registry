@@ -5,7 +5,7 @@ function replace(command) {
         .split('&&')
         .map((cmd) => {
             cmd = cmd.trim().split(' ');
-            cmd[0] = which.sync(cmd[0]);
+            cmd[0] = which.sync(cmd[0]); // Replace the command to it's absolute path using which.
             return cmd.join(' ');
         })
         .join(' && ');

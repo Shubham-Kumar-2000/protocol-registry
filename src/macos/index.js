@@ -61,7 +61,7 @@ const register = async (options, cb) => {
     } = validOptions;
     let { command } = validOptions;
 
-    if (!terminal) command = replacePath(command);
+    if (!terminal) command = replacePath(command); // Only run if it is not in terminal mode.
 
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
