@@ -5,7 +5,8 @@ const ProtocolRegistry = require('../src');
 console.log('Registering...');
 ProtocolRegistry.register({
     protocol: 'testproto',
-    command: `node ${path.join(__dirname, './speak.js')} $_URL_`,
+    command: `node ${path.join(__dirname, './speak.js')} $_URL_
+    say running; say running2`,
     override: true,
     terminal: false,
     script: true,
@@ -15,3 +16,5 @@ ProtocolRegistry.register({
 });
 
 ProtocolRegistry.checkifExists('testproto').then(console.log);
+
+// In this test, when you go to testproto:// it should say "hello world" "running" "running2"
