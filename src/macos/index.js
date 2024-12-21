@@ -77,19 +77,15 @@ const register = async (options, cb) => {
         const plistMutator = join(__dirname, 'plistMutator.js');
 
         const appTemplate = join(__dirname, './templates', 'app.ejs');
-        const appSource = join(__dirname, '../../temp', `app-${protocol}.txt`);
+        const appSource = join(constants.tmpdir, `app-${protocol}.txt`);
         const appPath = join(homedir, `APP-${protocol}.app`);
 
         const urlAppTemplate = join(__dirname, './templates', 'url-app.ejs');
-        const urlAppSource = join(
-            __dirname,
-            '../../temp',
-            `URL-${protocol}.txt`
-        );
+        const urlAppSource = join(constants.tmpdir, `URL-${protocol}.txt`);
         const urlAppPath = join(homedir, `URL-${protocol}.app`);
 
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
-        const scriptFilePath = join(__dirname, '../../temp', 'script.sh');
+        const scriptFilePath = join(constants.tmpdir, 'script.sh');
 
         const appSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
@@ -140,14 +136,13 @@ const register = async (options, cb) => {
         const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
             silent: true
         });
-        if (scriptResult.code != 0) throw new Error(scriptResult.stderr);
 
-        fs.unlinkSync(scriptFilePath);
-        fs.unlinkSync(urlAppSource);
-        fs.unlinkSync(appSource);
+        if (scriptResult.code != 0) throw new Error(scriptResult.stderr);
     } catch (e) {
         if (!cb) throw e;
         res = e;
+    } finally {
+        fs.rmSync(constants.tmpdir, { recursive: true, force: true });
     }
     if (cb) return cb(res);
 };
