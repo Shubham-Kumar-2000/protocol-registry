@@ -1,6 +1,6 @@
 {
   "name": "protocol-registry",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "This module allows you to set custom protocol handler for your nodejs app.",
   "main": "src/index.js",
   "scripts": {
