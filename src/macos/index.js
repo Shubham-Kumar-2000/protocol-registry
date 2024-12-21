@@ -140,8 +140,7 @@ const register = async (options, cb) => {
         const scriptResult = await shell.exec(`'${scriptFilePath}'`, {
             silent: true
         });
-        if (scriptResult.code != 0 || scriptResult.stderr)
-            throw new Error(scriptResult.stderr);
+        if (scriptResult.code != 0) throw new Error(scriptResult.stderr);
 
         fs.unlinkSync(scriptFilePath);
         fs.unlinkSync(urlAppSource);
