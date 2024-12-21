@@ -1,4 +1,6 @@
 const { join } = require('path');
+const fs = require('fs');
+const os = require('os');
 
 const constants = {
     platforms: {
@@ -12,13 +14,17 @@ const constants = {
             noProtoExitCode: 4
         }
     },
-    homedir: join(require('os').homedir(), '.protocol-registry'),
+    homedir: join(os.homedir(), '.protocol-registry'),
     urlArgument: {
         win32: '%1',
         win32InScript: '%~1%',
         linux: '%u',
         // eslint-disable-next-line quotes
         darwin: `" & this_URL & "`
+    },
+    tmpdir: (protocol) => {
+        return fs.mkdtempSync(`${os.tmpdir()}/register-protocol-${protocol}-`);
     }
 };
+
 module.exports = constants;
