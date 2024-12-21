@@ -2,8 +2,6 @@ const { join } = require('path');
 const fs = require('fs');
 const os = require('os');
 
-let _tmpdir;
-
 const constants = {
     platforms: {
         windows: 'win32',
@@ -24,11 +22,8 @@ const constants = {
         // eslint-disable-next-line quotes
         darwin: `" & this_URL & "`
     },
-    get tmpdir() {
-        if (!fs.existsSync(_tmpdir)) {
-            _tmpdir = fs.mkdtempSync(`${os.tmpdir()}/register-protocol-`);
-        }
-        return _tmpdir;
+    tmpdir: (protocol) => {
+        return fs.mkdtempSync(`${os.tmpdir()}/register-protocol-${protocol}-`);
     }
 };
 

@@ -64,6 +64,8 @@ const register = async (options, cb) => {
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
+
+    let tempDir = null;
     try {
         const exist = await checkifExists(protocol);
 
@@ -71,11 +73,13 @@ const register = async (options, cb) => {
             if (!override) throw new Error('Protocol already exists');
         }
 
+        tempDir = constants.tmpdir(protocol);
+
         const desktopFileName = `${protocol}.desktop`;
-        const desktopFilePath = join(constants.tmpdir, desktopFileName);
+        const desktopFilePath = join(tempDir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
-        const scriptFilePath = join(constants.tmpdir, 'script.sh');
+        const scriptFilePath = join(tempDir, 'script.sh');
 
         command = await preProcessCommands(
             protocol,
@@ -120,7 +124,9 @@ const register = async (options, cb) => {
         if (!cb) throw e;
         res = e;
     } finally {
-        fs.rmSync(constants.tmpdir, { recursive: true, force: true });
+        if (tempDir) {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        }
     }
     if (cb) return cb(res);
 };

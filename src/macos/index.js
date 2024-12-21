@@ -60,12 +60,16 @@ const register = async (options, cb) => {
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
+    let tempDir = null;
+
     try {
         const exist = await checkifExists(protocol);
 
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
         }
+
+        tempDir = constants.tmpdir(protocol);
 
         command = await preProcessCommands(
             protocol,
@@ -77,15 +81,15 @@ const register = async (options, cb) => {
         const plistMutator = join(__dirname, 'plistMutator.js');
 
         const appTemplate = join(__dirname, './templates', 'app.ejs');
-        const appSource = join(constants.tmpdir, `app-${protocol}.txt`);
+        const appSource = join(tempDir, `app-${protocol}.txt`);
         const appPath = join(homedir, `APP-${protocol}.app`);
 
         const urlAppTemplate = join(__dirname, './templates', 'url-app.ejs');
-        const urlAppSource = join(constants.tmpdir, `URL-${protocol}.txt`);
+        const urlAppSource = join(tempDir, `URL-${protocol}.txt`);
         const urlAppPath = join(homedir, `URL-${protocol}.app`);
 
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
-        const scriptFilePath = join(constants.tmpdir, 'script.sh');
+        const scriptFilePath = join(tempDir, 'script.sh');
 
         const appSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
@@ -142,7 +146,9 @@ const register = async (options, cb) => {
         if (!cb) throw e;
         res = e;
     } finally {
-        fs.rmSync(constants.tmpdir, { recursive: true, force: true });
+        if (tempDir) {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        }
     }
     if (cb) return cb(res);
 };
