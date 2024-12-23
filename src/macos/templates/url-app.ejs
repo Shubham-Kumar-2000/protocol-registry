@@ -1,4 +1,8 @@
 on open location this_URL
-    set the clipboard to this_URL
-    tell application "<%- application %>" to activate
+    <%if (terminal > 0) { %>
+        set the clipboard to this_URL
+        tell application "<%- application %>" to activate
+    <% } else { %>
+        do shell script "<%- command %>"
+    <% } %>
 end open location
