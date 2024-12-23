@@ -1,10 +1,6 @@
 set this_URL to ( the clipboard as text )
-<%if (terminal > 0) { %>
 tell application "Terminal"
     do script "<%- command %>"
     activate
 end tell
-<% } else { %>
-do shell script "<%- command %>"
-<% } %>
 set the clipboard to ""

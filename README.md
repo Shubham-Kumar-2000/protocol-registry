@@ -1,5 +1,9 @@
 ﻿# Protocol-registry
 
+[![License](https://img.shields.io/github/license/Shubham-Kumar-2000/protocol-registry)](https://github.com/Shubham-Kumar-2000/protocol-registry)
+[![Latest version](https://img.shields.io/npm/v/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+[![Installs](https://img.shields.io/npm/dt/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+
 > Registers protocols like:- yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
 This is meant to be used in command-line tools and scripts, not in the browser.
