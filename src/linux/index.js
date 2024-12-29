@@ -160,8 +160,6 @@ const deRegister = async (protocol) => {
     const fileData = fs.readFileSync(desktopFile, 'utf-8');
     const fileLines = fileData.split('\n');
 
-    console.log({ fileLines });
-
     const filteredDesktopLines = fileLines.filter(
         (line) => !line.includes('MimeType')
     );
