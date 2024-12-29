@@ -46,4 +46,5 @@ declare namespace ProtocolRegistry {
   ): void;
 
   export function checkifExists(protocol: string): Promise<boolean>;
+  export function deRegister(protocol: string): Promise<void>;
 }

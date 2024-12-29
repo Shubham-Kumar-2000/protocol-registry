@@ -130,7 +130,49 @@ const register = async (options, cb) => {
     }
     if (cb) return cb(res);
 };
+
+/**
+ * DeRegisters the given protocol
+ * @param {string=} protocol - Protocol on which the deRegistry should run.
+ */
+const deRegister = async (protocol) => {
+    const exist = await checkifExists(protocol);
+
+    if (!exist) {
+        throw new Error('Protocol does not exists.');
+    }
+
+    const configPath = join(process.env.HOME, '.config');
+    const mimeappsPath = join(configPath, 'mimeapps.list');
+    const data = fs.readFileSync(mimeappsPath, 'utf-8');
+    const lines = data.split('\n');
+
+    const filteredLines = lines.filter((line) => !line.includes(protocol));
+    const protocolLine = lines.filter((line) => line.includes(protocol));
+
+    fs.writeFileSync(mimeappsPath, filteredLines.join('\n')); // => to get the desktop file
+
+    const desktopFileName = protocolLine[0].split('=');
+
+    const desktopFilePath = join(process.env.HOME, '.local/share/applications');
+    const desktopFile = join(desktopFilePath, desktopFileName[1]);
+
+    const fileData = fs.readFileSync(desktopFile, 'utf-8');
+    const fileLines = fileData.split('\n');
+
+    console.log({ fileLines });
+
+    const filteredDesktopLines = fileLines.filter(
+        (line) => !line.includes('MimeType')
+    );
+
+    fs.writeFileSync(desktopFile, filteredDesktopLines.join('\n'));
+
+    // const xdgEnv = process.env.XDG_DATA_DIRS;
+};
+
 module.exports = {
     checkifExists,
-    register
+    register,
+    deRegister
 };
