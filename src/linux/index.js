@@ -6,6 +6,7 @@ const { preProcessCommands } = require('../utils/processCommand');
 const constants = require('../config/constants');
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
+const { findAndDeleteLine } = require('../utils/fileUtil');
 
 /**
  * Checks if the given protocal already exist on not
@@ -142,32 +143,42 @@ const deRegister = async (protocol) => {
         throw new Error('Protocol does not exists.');
     }
 
-    const configPath = join(process.env.HOME, '.config');
-    const mimeappsPath = join(configPath, 'mimeapps.list');
-    const data = fs.readFileSync(mimeappsPath, 'utf-8');
-    const lines = data.split('\n');
+    const configPath = [
+        join(process.env.HOME, '.config', 'mimeapps.list'),
+        join(process.env.HOME, '.local/share/applications', 'mimeapps.list'),
+        '/usr/share//applications/gnome-mimeapps.list' //! giving permission denied exception
+    ];
 
-    const filteredLines = lines.filter((line) => !line.includes(protocol));
-    const protocolLine = lines.filter((line) => line.includes(protocol));
+    const removedLines = findAndDeleteLine(configPath, protocol);
+    if (removedLines.length > 0) {
+        let desktopFileName = null;
+        removedLines.forEach((result) => {
+            console.log(`From ${result.filePath}: ${result.removedLine}`);
+            desktopFileName = result.removedLine.split('=');
+            return;
+        });
 
-    fs.writeFileSync(mimeappsPath, filteredLines.join('\n')); // => to get the desktop file
+        console.log({ desktopFileName });
+        const desktopFilePath = join(
+            process.env.HOME,
+            '.local/share/applications'
+        );
+        const desktopFile = join(desktopFilePath, desktopFileName[1]);
 
-    const desktopFileName = protocolLine[0].split('=');
+        const fileData = fs.readFileSync(desktopFile, 'utf-8');
+        const fileLines = fileData.split('\n');
 
-    const desktopFilePath = join(process.env.HOME, '.local/share/applications');
-    const desktopFile = join(desktopFilePath, desktopFileName[1]);
+        const filteredDesktopLines = fileLines.filter(
+            (line) => !line.includes('MimeType')
+        );
 
-    const fileData = fs.readFileSync(desktopFile, 'utf-8');
-    const fileLines = fileData.split('\n');
+        fs.writeFileSync(desktopFile, filteredDesktopLines.join('\n'));
+    } else {
+        console.log('No lines containing the search string were found.');
+    }
 
-    const filteredDesktopLines = fileLines.filter(
-        (line) => !line.includes('MimeType')
-    );
-
-    fs.writeFileSync(desktopFile, filteredDesktopLines.join('\n'));
-
-    const xdgEnv = process.env.XDG_DATA_DIRS;
-    console.log({ xdgEnv });
+    // const xdgEnv = process.env.XDG_DATA_DIRS;
+    // console.log({ xdgEnv });
 };
 
 module.exports = {

@@ -2,8 +2,8 @@ const ProtocolRegistry = require('../src');
 
 console.log('DeRegistering...');
 
-ProtocolRegistry.deRegister('testprotobeta').then(() => {
+ProtocolRegistry.deRegister('testprotozeta').then(() => {
     console.log('Deregistered done!');
 });
 
-ProtocolRegistry.checkifExists('testprotobeta').then(console.log);
+ProtocolRegistry.checkifExists('testprotozeta').then(console.log);

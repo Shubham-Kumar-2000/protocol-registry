@@ -4,7 +4,7 @@ const ProtocolRegistry = require('../src');
 
 console.log('Registering...');
 ProtocolRegistry.register({
-    protocol: 'testprotobeta',
+    protocol: 'testprotozeta',
     command: `node ${path.join(__dirname, './tester.js')} $_URL_`,
     override: true,
     terminal: true,
@@ -14,4 +14,4 @@ ProtocolRegistry.register({
     console.log('Successfully registered');
 });
 
-ProtocolRegistry.checkifExists('testprotobeta').then(console.log);
+ProtocolRegistry.checkifExists('testprotozeta').then(console.log);
