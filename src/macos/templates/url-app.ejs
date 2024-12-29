@@ -1,8 +1,9 @@
 on open location this_URL
     <%if (terminal > 0) { %>
-        set the clipboard to this_URL
+        do shell script "defaults write com.protocol.registry.<%- protocol %> current_url '" & this_URL & "'"
         tell application "<%- application %>" to activate
     <% } else { %>
-        do shell script "<%- command %>"
+        set command to "<%- command %>"
+        do shell script "export PATH=/usr/local/bin:$PATH ; source ~/.zshrc ; zsh -lc \"" & command & "\""
     <% } %>
 end open location

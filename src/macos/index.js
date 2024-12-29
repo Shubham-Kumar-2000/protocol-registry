@@ -92,17 +92,21 @@ const register = async (options, cb) => {
         const scriptFilePath = join(tempDir, 'script.sh');
 
         const appSourceContent = await new Promise((resolve, reject) => {
-            ejs.renderFile(appTemplate, { command }, function (err, str) {
-                if (err) return reject(err);
-                resolve(str);
-            });
+            ejs.renderFile(
+                appTemplate,
+                { command, protocol },
+                function (err, str) {
+                    if (err) return reject(err);
+                    resolve(str);
+                }
+            );
         });
         if (terminal) fs.writeFileSync(appSource, appSourceContent);
 
         const urlAppSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 urlAppTemplate,
-                { application: appPath, terminal, command },
+                { application: appPath, terminal, command, protocol },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
