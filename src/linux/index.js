@@ -166,7 +166,8 @@ const deRegister = async (protocol) => {
 
     fs.writeFileSync(desktopFile, filteredDesktopLines.join('\n'));
 
-    // const xdgEnv = process.env.XDG_DATA_DIRS;
+    const xdgEnv = process.env.XDG_DATA_DIRS;
+    console.log({ xdgEnv });
 };
 
 module.exports = {
