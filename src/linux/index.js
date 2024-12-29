@@ -6,7 +6,11 @@ const { preProcessCommands } = require('../utils/processCommand');
 const constants = require('../config/constants');
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
-const { findAndDeleteLine } = require('../utils/fileUtil');
+const {
+    findAndDeleteLine,
+    checkIfFolderExists,
+    checkIfFileExists
+} = require('../utils/fileUtil');
 
 /**
  * Checks if the given protocal already exist on not
@@ -158,27 +162,49 @@ const deRegister = async (protocol) => {
             return;
         });
 
-        console.log({ desktopFileName });
         const desktopFilePath = join(
             process.env.HOME,
-            '.local/share/applications'
+            '.local/share/applications',
+            desktopFileName[1]
         );
-        const desktopFile = join(desktopFilePath, desktopFileName[1]);
+        const desktopFilePaths = [desktopFilePath];
 
-        const fileData = fs.readFileSync(desktopFile, 'utf-8');
-        const fileLines = fileData.split('\n');
+        const xdgEnv = process.env.XDG_DATA_DIRS;
 
-        const filteredDesktopLines = fileLines.filter(
-            (line) => !line.includes('MimeType')
-        );
+        if (xdgEnv) {
+            const xdgDataDirs = xdgEnv.split(':');
+            if (xdgDataDirs && xdgDataDirs.length) {
+                xdgDataDirs.forEach((path) => {
+                    const isApplicationFolderExist = checkIfFolderExists(
+                        join(path, 'applications')
+                    );
 
-        fs.writeFileSync(desktopFile, filteredDesktopLines.join('\n'));
+                    if (isApplicationFolderExist) {
+                        desktopFilePaths.push(
+                            join(path, 'applications', desktopFileName[1])
+                        );
+                    }
+                });
+            }
+        }
+
+        desktopFilePaths.forEach((desktopFilePath) => {
+            if (checkIfFileExists(desktopFilePath)) {
+                const fileData = fs.readFileSync(desktopFilePath, 'utf-8');
+                const fileLines = fileData.split('\n');
+
+                const filteredDesktopLines = fileLines.filter(
+                    (line) => !line.includes('MimeType')
+                );
+                fs.writeFileSync(
+                    desktopFilePath,
+                    filteredDesktopLines.join('\n')
+                );
+            }
+        });
     } else {
         console.log('No lines containing the search string were found.');
     }
-
-    // const xdgEnv = process.env.XDG_DATA_DIRS;
-    // console.log({ xdgEnv });
 };
 
 module.exports = {

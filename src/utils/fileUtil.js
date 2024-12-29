@@ -28,6 +28,32 @@ const findAndDeleteLine = (configPath, searchString) => {
     return removedLines;
 };
 
+const checkIfFolderExists = (directoryPath) => {
+    try {
+        const stats = fs.statSync(directoryPath);
+        return stats.isDirectory();
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return false;
+        }
+        throw error;
+    }
+};
+
+const checkIfFileExists = (filePath) => {
+    try {
+        const stats = fs.statSync(filePath);
+        return stats.isFile();
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return false;
+        }
+        throw error;
+    }
+};
+
 module.exports = {
-    findAndDeleteLine
+    findAndDeleteLine,
+    checkIfFolderExists,
+    checkIfFileExists
 };
