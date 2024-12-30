@@ -4,6 +4,6 @@ on open location this_URL
         tell application "<%- application %>" to activate
     <% } else { %>
         set command to "<%- command %>"
-        do shell script "export PATH=/usr/local/bin:$PATH ; source ~/.zshrc ; zsh -lc \"" & command & "\""
+        do shell script "export PR_APP_PATH='<%- process.env.PATH %>' ; export PATH=$PR_APP_PATH:$PATH ; sh -lc  \"" & command & "\""
     <% } %>
 end open location

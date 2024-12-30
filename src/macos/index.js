@@ -106,7 +106,12 @@ const register = async (options, cb) => {
         const urlAppSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 urlAppTemplate,
-                { application: appPath, terminal, command, protocol },
+                {
+                    application: appPath,
+                    terminal,
+                    command,
+                    protocol
+                },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
