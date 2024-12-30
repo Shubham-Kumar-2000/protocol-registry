@@ -8,9 +8,9 @@ on run argv
     set appFile to my getDefautltAppFor(item 1 of argv)
 
     if appFile = missing value then
-        set output to "false"
+        set output to "pr-result=false"
     else
-        set output to "true"
+        set output to (the POSIX path of appFile) as text
     end if
 
     output

@@ -32,8 +32,8 @@ const checkifExists = async (protocol) => {
     if (res.code !== 0 || res.stderr) {
         throw new Error(res.stderr);
     }
-    if (res.stdout.trim() === 'true') return true;
-    return false;
+
+    return res.stdout.trim() !== 'pr-result=false';
 };
 
 /**
@@ -94,19 +94,24 @@ const register = async (options, cb) => {
         const appSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 appTemplate,
-                { command, terminal },
+                { command, protocol },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
                 }
             );
         });
-        fs.writeFileSync(appSource, appSourceContent);
+        if (terminal) fs.writeFileSync(appSource, appSourceContent);
 
         const urlAppSourceContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 urlAppTemplate,
-                { application: appPath },
+                {
+                    application: appPath,
+                    terminal,
+                    command,
+                    protocol
+                },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
@@ -119,6 +124,7 @@ const register = async (options, cb) => {
             ejs.renderFile(
                 scriptTemplate,
                 {
+                    terminal,
                     appPath,
                     appSource,
                     urlAppPath,

@@ -1,5 +1,9 @@
 ﻿# Protocol-registry
 
+[![License](https://img.shields.io/github/license/Shubham-Kumar-2000/protocol-registry)](https://github.com/Shubham-Kumar-2000/protocol-registry)
+[![Latest version](https://img.shields.io/npm/v/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+[![Installs](https://img.shields.io/npm/dt/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+
 > Registers protocols like:- yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
 This is meant to be used in command-line tools and scripts, not in the browser.
@@ -274,48 +278,15 @@ Register function accept the below mentioned option
 
 - [`Windows`](https://g.co/kgs/bm4Z4b) - OS - Supported
 - [`linux`](https://g.co/kgs/xXAi4C) - OS - Supported
-- [`MacOS`](https://g.co/kgs/k8yG4U) - OS - Supported with some anomalies mentioned below.
+- [`MacOS`](https://g.co/kgs/k8yG4U) - OS - Supported
 
 ## MacOS Anomalies
 
 ### terminal: false
 
-In MacOS if you don't launch the terminal it will run your command without logging in.
+In MacOS if you don't launch the terminal it will run your command without logging in. But we still go head and log you in using your default system `SHELL` i.e. `zsh` or `bash`. Also we preserve the current `PATH` while protocol execution.
 
-Thus you need to use absolute address of each command in your command string.
-
-#### Example
-
-Suppose you want to run :
-
-```
-$ node /path/to/index.js
-```
-
-Then first you need to find the path of node using the command below in terminal :
-
-```
-$ type node
-> node is /usr/local/bin/node
-```
-
-Then replace the address of node in original command.
-So your final command will be :
-
-```
-$ /usr/local/bin/node /path/to/index.js
-```
-
-To check if your program is running in MacOS you can use the code below:
-
-```js
-if (process.platform === "darwin") {
-  // running in MacOS do some thing
-}
-```
-
-To run shell commands such as "type node" using nodeJS
-please check the [`ShellJS documentation`](https://www.npmjs.com/package/shelljs#execcommand--options--callback)
+But still in some cases `PATH` added after the the registration may not work. Thus make sure all your comands are working before registering the protocol or use their absolute path.
 
 ## Contributors:
 

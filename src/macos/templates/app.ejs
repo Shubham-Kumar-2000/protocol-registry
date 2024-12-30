@@ -1,10 +1,6 @@
-set this_URL to ( the clipboard as text )
-<%if (terminal > 0) { %>
+set this_URL to do shell script "defaults read com.protocol.registry.<%- protocol %> current_url"
 tell application "Terminal"
-    do script "<%- command %>"
+    set command to "<%- command %>"
+    do script command
     activate
 end tell
-<% } else { %>
-do shell script "<%- command %>"
-<% } %>
-set the clipboard to ""
