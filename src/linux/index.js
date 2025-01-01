@@ -149,8 +149,7 @@ const deRegister = async (protocol) => {
 
     const configPath = [
         join(process.env.HOME, '.config', 'mimeapps.list'),
-        join(process.env.HOME, '.local/share/applications', 'mimeapps.list'),
-        '/usr/share//applications/gnome-mimeapps.list' //! giving permission denied exception
+        join(process.env.HOME, '.local/share/applications', 'mimeapps.list')
     ];
 
     const removedLines = findAndDeleteLine(configPath, protocol);
