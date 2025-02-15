@@ -15,3 +15,7 @@ ProtocolRegistry.register({
 });
 
 ProtocolRegistry.checkifExists('testproto').then(console.log);
+
+ProtocolRegistry.deRegister('testproto', {})
+    .then(console.log)
+    .catch(console.error);

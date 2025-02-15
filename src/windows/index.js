@@ -2,7 +2,17 @@ const Registry = require('winreg');
 const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
-const { registerSchema } = require('../validation/common');
+const { registerSchema, deRegisterSchema } = require('../validation/common');
+
+const getRegistry = (protocol) => {
+    const keyPath = '\\Software\\Classes\\' + protocol;
+    const registry = new Registry({
+        hive: Registry.HKCU,
+        key: keyPath
+    });
+    const cmdPath = keyPath + '\\shell\\open\\command';
+    return { registry, keyPath, cmdPath };
+};
 
 /**
  * Checks if the given protocal already exist on not
@@ -60,12 +70,7 @@ const register = async (options, cb) => {
     // Software\Classes", which is inherited by "HKEY_CLASSES_ROOT"
     // anyway, and can be written by unprivileged users.
     try {
-        const keyPath = '\\Software\\Classes\\' + protocol;
-        const registry = new Registry({
-            hive: Registry.HKCU,
-            key: keyPath
-        });
-
+        const { registry, cmdPath } = getRegistry(protocol);
         const exist = await checkifExists(protocol);
 
         if (exist) {
@@ -92,7 +97,6 @@ const register = async (options, cb) => {
         );
 
         const urlDecl = 'URL:' + protocol;
-        const cmdPath = keyPath + '\\shell\\open\\command';
 
         await new Promise((resolve, reject) =>
             registry.set(
@@ -139,7 +143,29 @@ const register = async (options, cb) => {
     }
     if (cb) return cb(res);
 };
+
+/**
+ * Removes the registration of the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @param {object} [options={}] - the options
+ * @param {boolean=} options.force - This option has no effect in windows
+ * @returns {Promise}
+ */
+const deRegister = async (protocol, options = {}) => {
+    validator(deRegisterSchema, options);
+    const { registry } = getRegistry(protocol);
+    const exists = await checkifExists(protocol);
+    if (!exists) return;
+    return new Promise((resolve, reject) => {
+        registry.destroy((err) => {
+            if (err) return reject(err);
+            return resolve(true);
+        });
+    });
+};
+
 module.exports = {
     checkifExists,
-    register
+    register,
+    deRegister
 };

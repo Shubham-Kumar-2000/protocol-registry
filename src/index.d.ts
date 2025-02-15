@@ -39,6 +39,11 @@ declare namespace ProtocolRegistry {
      */
     scriptName?: string;
   };
+
+  export type DeRegisterOptions = {
+    force?: boolean;
+  };
+
   export function register(params: RegisterOptions): Promise<void>;
   export function register(
     params: RegisterOptions,
@@ -46,4 +51,5 @@ declare namespace ProtocolRegistry {
   ): void;
 
   export function checkifExists(protocol: string): Promise<boolean>;
+  export function deRegister(protocol: string, options: DeRegisterOptions?): Promise<void>;
 }
