@@ -94,17 +94,17 @@ const register = async (options, cb) => {
         const urlDecl = 'URL:' + protocol;
         const cmdPath = keyPath + '\\shell\\open\\command';
 
-        await new Promise((resolve, reject) =>
-            registry.set(
-                'URL Protocol',
-                Registry.REG_SZ,
-                Registry.DEFAULT_VALUE,
-                (err) => {
-                    if (err) return reject(err);
-                    return resolve(true);
-                }
-            )
-        );
+        // await new Promise((resolve, reject) =>
+        //     registry.set(
+        //         'URL Protocol',
+        //         Registry.REG_SZ,
+        //         Registry.DEFAULT_VALUE,
+        //         (err) => {
+        //             if (err) return reject(err);
+        //             return resolve(true);
+        //         }
+        //     )
+        // );
         await new Promise((resolve, reject) =>
             registry.set(
                 Registry.DEFAULT_VALUE,
