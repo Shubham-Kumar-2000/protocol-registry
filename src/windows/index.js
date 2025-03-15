@@ -3,6 +3,7 @@ const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
+const { setRegistry } = require('./registrySet');
 
 /**
  * Checks if the given protocal already exist on not
@@ -37,12 +38,7 @@ const checkifExists = (protocol) => {
 const register = async (options, cb) => {
     let res = null;
     const validOptions = validator(registerSchema, options);
-    const {
-        protocol,
-        override,
-        terminal,
-        script: scriptRequired
-    } = validOptions;
+    const { protocol, override, terminal } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
@@ -94,45 +90,27 @@ const register = async (options, cb) => {
         const urlDecl = 'URL:' + protocol;
         const cmdPath = keyPath + '\\shell\\open\\command';
 
-        await new Promise((resolve, reject) =>
-            registry.set(
-                '"URL Protocol"',
-                Registry.REG_SZ,
-                `"${Registry.DEFAULT_VALUE}"`,
-                (err) => {
-                    if (err) return reject(err);
-                    return resolve(true);
-                }
-            )
-        );
-        await new Promise((resolve, reject) =>
-            registry.set(
-                Registry.DEFAULT_VALUE,
-                Registry.REG_SZ,
-                urlDecl,
-                (err) => {
-                    if (err) return reject(err);
-                    return resolve(true);
-                }
-            )
-        );
+        await setRegistry(registry, {
+            name: 'URL Protocol',
+            type: Registry.REG_SZ,
+            value: Registry.DEFAULT_VALUE
+        });
+        await setRegistry(registry, {
+            name: Registry.DEFAULT_VALUE,
+            type: Registry.REG_SZ,
+            value: urlDecl
+        });
 
         const commandRegistry = new Registry({
             hive: Registry.HKCU,
             key: cmdPath
         });
 
-        await new Promise((resolve, reject) =>
-            commandRegistry.set(
-                Registry.DEFAULT_VALUE,
-                Registry.REG_SZ,
-                terminal ? `"cmd /k ${command}"` : `"${command}"`,
-                (err) => {
-                    if (err) return reject(err);
-                    return resolve(true);
-                }
-            )
-        );
+        await setRegistry(commandRegistry, {
+            name: Registry.DEFAULT_VALUE,
+            type: Registry.REG_SZ,
+            value: terminal ? `cmd /k "${command}"` : command
+        });
     } catch (e) {
         if (!cb) throw e;
         res = e;
