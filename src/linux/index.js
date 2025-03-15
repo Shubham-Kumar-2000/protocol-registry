@@ -10,7 +10,6 @@ const { registerSchema, deRegisterSchema } = require('../validation/common');
 const {
     checkAndRemoveProtocolSchema,
     checkIfFolderExists,
-    checkIfFileExists,
     fileContainsExactLine
 } = require('../utils/fileUtil');
 
@@ -154,66 +153,69 @@ const register = async (options, cb) => {
 const deRegister = async (protocol, options = {}) => {
     const validOptions = validator(deRegisterSchema, options);
 
-    const exist = await checkifExists(protocol);
-
-    if (!exist) {
-        return;
-    }
-
     const defaultApp = await getDefaultApp(protocol);
 
+    if (!defaultApp) {
+        return;
+    }
     const configPaths = [
-        join(process.env.HOME, '.config', 'mimeapps.list'),
-        join(process.env.HOME, '.local/share/applications', 'mimeapps.list')
+        join(constants.osHomeDir, '.config', 'mimeapps.list'),
+        join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
     ];
 
-    const hasProtocolSchema = checkAndRemoveProtocolSchema(
+    checkAndRemoveProtocolSchema(
         configPaths,
         `x-scheme-handler/${protocol}=${defaultApp}`
     );
-    if (hasProtocolSchema) {
-        const desktopFilePath = join(
-            process.env.HOME,
-            '.local/share/applications',
-            defaultApp
-        );
-        const desktopFilePaths = [desktopFilePath];
 
-        const xdgEnv = process.env.XDG_DATA_DIRS;
+    const desktopFilePaths = [
+        join(constants.osHomeDir, '.local/share/applications', defaultApp)
+    ];
 
-        if (xdgEnv) {
-            const xdgDataDirs = xdgEnv.split(':');
-            if (xdgDataDirs && xdgDataDirs.length) {
-                xdgDataDirs.forEach((path) => {
-                    const isApplicationFolderExist = checkIfFolderExists(
-                        join(path, 'applications')
-                    );
+    const xdgEnv = process.env.XDG_DATA_DIRS;
 
-                    if (isApplicationFolderExist) {
-                        desktopFilePaths.push(
-                            join(path, 'applications', defaultApp)
-                        );
-                    }
-                });
-            }
-        }
-        desktopFilePaths.forEach((desktopFilePath) => {
-            if (checkIfFileExists(desktopFilePath)) {
-                const fileData = fs.readFileSync(desktopFilePath, 'utf-8');
-                const registeredByThisModule = fileContainsExactLine(
-                    fileData,
-                    `PRIdentifier=com.protocol.registry.${protocol}`
+    if (xdgEnv) {
+        const xdgDataDirs = xdgEnv.split(':');
+        if (xdgDataDirs && xdgDataDirs.length) {
+            xdgDataDirs.forEach((path) => {
+                const isApplicationFolderExist = checkIfFolderExists(
+                    join(path, 'applications')
                 );
 
-                if (registeredByThisModule || validOptions.force) {
-                    // delete the desktop app if created by this protocol
-                    fs.rmSync(desktopFilePath, {
-                        recursive: true,
-                        force: true
-                    });
+                if (isApplicationFolderExist) {
+                    desktopFilePaths.push(
+                        join(path, 'applications', defaultApp)
+                    );
                 }
-            }
+            });
+        }
+    }
+
+    const desktopFilePath = desktopFilePaths.find(fs.existsSync);
+
+    const fileData = fs.readFileSync(desktopFilePath, 'utf-8');
+    const registeredByThisModule = fileContainsExactLine(
+        fileData,
+        `PRIdentifier=com.protocol.registry.${protocol}`
+    );
+
+    if (registeredByThisModule || validOptions.force) {
+        // delete the desktop app if created by this protocol
+        fs.rmSync(desktopFilePath, {
+            recursive: true,
+            force: true
         });
+    }
+
+    const internalProtocolDir = join(constants.homedir, protocol);
+
+    try {
+        // Remove the internal app and script if it is created by this module
+        if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+            fs.rmSync(internalProtocolDir, { recursive: true, force: true });
+        }
+    } catch (e) {
+        console.log('Ignored Error: ', e);
     }
 };
 
