@@ -80,7 +80,7 @@ const register = async (options, cb) => {
         command = await preProcessCommands(
             protocol,
             command,
-            scriptRequired,
+            true,
             options.scriptName
         );
 
@@ -94,17 +94,17 @@ const register = async (options, cb) => {
         const urlDecl = 'URL:' + protocol;
         const cmdPath = keyPath + '\\shell\\open\\command';
 
-        // await new Promise((resolve, reject) =>
-        //     registry.set(
-        //         'URL Protocol',
-        //         Registry.REG_SZ,
-        //         Registry.DEFAULT_VALUE,
-        //         (err) => {
-        //             if (err) return reject(err);
-        //             return resolve(true);
-        //         }
-        //     )
-        // );
+        await new Promise((resolve, reject) =>
+            registry.set(
+                '"URL Protocol"',
+                Registry.REG_SZ,
+                `"${Registry.DEFAULT_VALUE}"`,
+                (err) => {
+                    if (err) return reject(err);
+                    return resolve(true);
+                }
+            )
+        );
         await new Promise((resolve, reject) =>
             registry.set(
                 Registry.DEFAULT_VALUE,
@@ -126,7 +126,7 @@ const register = async (options, cb) => {
             commandRegistry.set(
                 Registry.DEFAULT_VALUE,
                 Registry.REG_SZ,
-                terminal ? `cmd /k "${command}"` : command,
+                terminal ? `"cmd /k ${command}"` : `"${command}"`,
                 (err) => {
                     if (err) return reject(err);
                     return resolve(true);
