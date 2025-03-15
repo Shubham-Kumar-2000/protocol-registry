@@ -39,7 +39,6 @@ test('Check if exist should be true if protocol is registered', async () => {
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
         override: true,
         terminal: false,
-        script: true,
         scriptName: 'my-custom-script-name'
     });
 
@@ -52,7 +51,6 @@ test('Check if deRegister should remove the protocol', async () => {
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
         override: true,
         terminal: false,
-        script: true,
         scriptName: 'my-custom-script-name'
     });
 
@@ -67,7 +65,6 @@ test('Check if deRegister should delete the apps if registered through this modu
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
         override: true,
         terminal: true,
-        script: true,
         scriptName: 'my-custom-script-name'
     });
 
@@ -82,7 +79,6 @@ test('Check if app should be registered again post the same app is deRegistered'
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
         override: true,
         terminal: false,
-        script: true,
         scriptName: 'my-custom-script-name'
     });
 
@@ -95,7 +91,6 @@ test('Check if app should be registered again post the same app is deRegistered'
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
         override: true,
         terminal: false,
-        script: true,
         scriptName: 'my-custom-script-name'
     });
 
