@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main",  "protocol-registry-v2" ]
 
 jobs:
   ubuntu:
