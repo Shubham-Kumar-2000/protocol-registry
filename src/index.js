@@ -25,5 +25,6 @@ const platform = getplatform();
 
 module.exports = {
     register: platform.register,
-    checkIfExists: platform.checkIfExists
+    checkIfExists: platform.checkIfExists,
+    deRegister: platform.deRegister
 };

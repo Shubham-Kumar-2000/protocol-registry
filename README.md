@@ -238,7 +238,7 @@ ProtocolRegistry.register(
 // use this for multiline commands
 ```
 
-### checkifExists(protocol)
+### checkIfExists(protocol)
 
 Checks if the provided protocol already exists or not.
 Returns a Promise which resolves in true or false.
@@ -251,7 +251,7 @@ const path = require("path");
 const ProtocolRegistry = require("protocol-registry");
 
 // Registers the Protocol
-ProtocolRegistry.checkifExists("testproto")
+ProtocolRegistry.checkIfExists("testproto")
   .then((res) => {
     console.log(res); // true or false
     // do something

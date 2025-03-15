@@ -1,13 +1,14 @@
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
+const plist = require('plist');
 const shell = require('../utils/shell');
 
 const constants = require('../config/constants');
 const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
-const { registerSchema } = require('../validation/common');
+const { registerSchema, deRegisterSchema } = require('../validation/common');
 const { homedir } = constants;
 
 if (process.platform === constants.platforms.macos) {
@@ -19,12 +20,8 @@ if (process.platform === constants.platforms.macos) {
             }
         });
 }
-/**
- * Checks if the given protocal already exist on not
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @returns {Promise}
- */
-const checkIfExists = async (protocol) => {
+
+const getDefaultApp = async (protocol) => {
     const res = await shell.exec(
         `'${join(__dirname, './defaultAppExist.sh')}' "${protocol}://test"`,
         { silent: true }
@@ -32,8 +29,18 @@ const checkIfExists = async (protocol) => {
     if (res.code !== 0 || res.stderr) {
         throw new Error(res.stderr);
     }
+    return res.stdout.trim() !== 'pr-result=false' ? res.stdout.trim() : null;
+};
 
-    return res.stdout.trim() !== 'pr-result=false';
+/**
+ * Checks if the given protocal already exist on not
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
+const checkIfExists = async (protocol) => {
+    const defaultApp = await getDefaultApp(protocol);
+
+    return defaultApp !== null;
 };
 
 /**
@@ -76,11 +83,11 @@ const register = async (options, cb) => {
 
         const appTemplate = join(__dirname, './templates', 'app.ejs');
         const appSource = join(tempDir, `app-${protocol}.txt`);
-        const appPath = join(homedir, `APP-${protocol}.app`);
+        const appPath = join(homedir, protocol, `APP-${protocol}.app`);
 
         const urlAppTemplate = join(__dirname, './templates', 'url-app.ejs');
         const urlAppSource = join(tempDir, `URL-${protocol}.txt`);
-        const urlAppPath = join(homedir, `URL-${protocol}.app`);
+        const urlAppPath = join(homedir, protocol, `URL-${protocol}.app`);
 
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');
@@ -152,7 +159,59 @@ const register = async (options, cb) => {
     }
     if (cb) return cb(res);
 };
+
+/**
+ * Removes the registration of the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @param {object?} [options={}] - the options
+ * @param {boolean=} options.force - This will delete the app even if it is not created by this module
+ * @returns {Promise}
+ */
+const deRegister = async (protocol, options = {}) => {
+    const validOptions = validator(deRegisterSchema, options);
+    const defaultApp = await getDefaultApp(protocol);
+    if (!defaultApp) return;
+
+    const internalProtocolDir = join(homedir, protocol);
+    const plistFile = join(defaultApp, './Contents/Info.plist');
+    const appPlist = plist.parse(fs.readFileSync(plistFile).toString());
+
+    const registeredByThisModule = (
+        appPlist.CFBundleIdentifier || ''
+    ).startsWith('com.protocol.registry');
+
+    if (validOptions.force || registeredByThisModule) {
+        // delete the app
+        fs.rmSync(defaultApp, {
+            recursive: true,
+            force: true
+        });
+    } else {
+        // Remove the protocol registration from the plist
+        delete appPlist.CFBundleURLTypes;
+        try {
+            fs.writeFileSync(plistFile, plist.build(appPlist));
+        } catch (e) {
+            if (e.code === 'EPERM')
+                throw new Error(
+                    'Permission Denied. Use force option or get App Management Permissions'
+                );
+            throw e;
+        }
+    }
+
+    try {
+        // Remove the internal app and script if it is created by this module
+        if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+            fs.rmSync(internalProtocolDir, { recursive: true, force: true });
+        }
+    } catch (e) {
+        console.log('Ignored Error: ', e);
+    }
+};
+
 module.exports = {
     checkIfExists,
-    register
+    register,
+    deRegister
 };
