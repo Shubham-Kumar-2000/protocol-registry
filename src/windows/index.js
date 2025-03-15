@@ -9,7 +9,7 @@ const { registerSchema } = require('../validation/common');
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
+const checkIfExists = (protocol) => {
     return new Promise((resolve, reject) => {
         const registry = new Registry({
             hive: Registry.HKCU,
@@ -37,12 +37,7 @@ const checkifExists = (protocol) => {
 const register = async (options, cb) => {
     let res = null;
     const validOptions = validator(registerSchema, options);
-    const {
-        protocol,
-        override,
-        terminal,
-        script: scriptRequired
-    } = validOptions;
+    const { protocol, override, terminal } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
@@ -66,7 +61,7 @@ const register = async (options, cb) => {
             key: keyPath
         });
 
-        const exist = await checkifExists(protocol);
+        const exist = await checkIfExists(protocol);
 
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
@@ -80,7 +75,6 @@ const register = async (options, cb) => {
         command = await preProcessCommands(
             protocol,
             command,
-            scriptRequired,
             options.scriptName
         );
 
@@ -140,6 +134,6 @@ const register = async (options, cb) => {
     if (cb) return cb(res);
 };
 module.exports = {
-    checkifExists,
+    checkIfExists,
     register
 };

@@ -27,12 +27,6 @@ declare namespace ProtocolRegistry {
      */
     terminal?: boolean;
     /**
-     * **default false.**
-     * If this is set true, then your command is saved in a script and that script is executed.
-     * This option is recommended if you are using multi-line commands or your command uses any kind of quotes.
-     */
-    script?: boolean;
-    /**
      * **default ${protocol}.**
      * This is the name of the script file that will be created if script option is set true.
      * It is recommended to use the default value.
@@ -45,5 +39,5 @@ declare namespace ProtocolRegistry {
     cb: (err?: Error) => void
   ): void;
 
-  export function checkifExists(protocol: string): Promise<boolean>;
+  export function checkIfExists(protocol: string): Promise<boolean>;
 }

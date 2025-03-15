@@ -24,7 +24,7 @@ if (process.platform === constants.platforms.macos) {
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = async (protocol) => {
+const checkIfExists = async (protocol) => {
     const res = await shell.exec(
         `'${join(__dirname, './defaultAppExist.sh')}' "${protocol}://test"`,
         { silent: true }
@@ -51,19 +51,14 @@ const checkifExists = async (protocol) => {
 const register = async (options, cb) => {
     let res = null;
     const validOptions = validator(registerSchema, options);
-    const {
-        protocol,
-        override,
-        terminal,
-        script: scriptRequired
-    } = validOptions;
+    const { protocol, override, terminal } = validOptions;
     let { command } = validOptions;
     if (cb && typeof cb !== 'function')
         throw new Error('Callback is not function');
     let tempDir = null;
 
     try {
-        const exist = await checkifExists(protocol);
+        const exist = await checkIfExists(protocol);
 
         if (exist) {
             if (!override) throw new Error('Protocol already exists');
@@ -74,7 +69,6 @@ const register = async (options, cb) => {
         command = await preProcessCommands(
             protocol,
             command,
-            scriptRequired,
             options.scriptName
         );
 
@@ -159,6 +153,6 @@ const register = async (options, cb) => {
     if (cb) return cb(res);
 };
 module.exports = {
-    checkifExists,
+    checkIfExists,
     register
 };

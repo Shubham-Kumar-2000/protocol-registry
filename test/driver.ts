@@ -10,9 +10,8 @@ ProtocolRegistry.register({
   command: `node ${path.join(__dirname, "./tester.js")} $_URL_`,
   override: true,
   terminal: true,
-  script: true,
 }).then(async () => {
   console.log("Successfully registered");
 });
 
-ProtocolRegistry.checkifExists("testproto").then(console.log);
+ProtocolRegistry.checkIfExists("testproto").then(console.log);
