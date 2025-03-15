@@ -89,11 +89,11 @@ const register = async (options, cb) => {
 
         const appTemplate = join(__dirname, './templates', 'app.ejs');
         const appSource = join(tempDir, `app-${protocol}.txt`);
-        const appPath = join(homedir, `APP-${protocol}.app`);
+        const appPath = join(homedir, protocol, `APP-${protocol}.app`);
 
         const urlAppTemplate = join(__dirname, './templates', 'url-app.ejs');
         const urlAppSource = join(tempDir, `URL-${protocol}.txt`);
-        const urlAppPath = join(homedir, `URL-${protocol}.app`);
+        const urlAppPath = join(homedir, protocol, `URL-${protocol}.app`);
 
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');
@@ -178,7 +178,7 @@ const deRegister = async (protocol, options = {}) => {
     const defaultApp = await getDefaultApp(protocol);
     if (!defaultApp) return;
 
-    const internalAppPath = join(homedir, `APP-${protocol}.app`);
+    const internalProtocolDir = join(homedir, protocol);
     const plistFile = join(defaultApp, './Contents/Info.plist');
     const appPlist = plist.parse(fs.readFileSync(plistFile).toString());
 
@@ -207,9 +207,9 @@ const deRegister = async (protocol, options = {}) => {
     }
 
     try {
-        // Remove the internal app if it is created by this module
-        if (fs.existsSync(internalAppPath)) {
-            fs.rmSync(internalAppPath, { recursive: true, force: true });
+        // Remove the internal app and script if it is created by this module
+        if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+            fs.rmSync(internalProtocolDir, { recursive: true, force: true });
         }
     } catch (e) {
         console.log('Ignored Error: ', e);
