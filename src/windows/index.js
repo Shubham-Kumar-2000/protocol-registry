@@ -29,11 +29,8 @@ const getRegistry = (protocol) => {
  * @returns {Promise}
  */
 const checkifExists = (protocol) => {
+    const { registry } = getRegistry(protocol);
     return new Promise((resolve, reject) => {
-        const registry = new Registry({
-            hive: Registry.HKCU,
-            key: '\\Software\\Classes\\' + protocol
-        });
         registry.keyExists((err, exist) => {
             if (err) return reject(err);
             resolve(exist);
@@ -169,7 +166,7 @@ const deRegister = async (protocol, options = {}) => {
     return new Promise((resolve, reject) => {
         registry.destroy((err) => {
             if (err) return reject(err);
-            return resolve(true);
+            return resolve();
         });
     });
 };
