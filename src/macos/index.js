@@ -6,9 +6,6 @@ const shell = require('../utils/shell');
 
 const constants = require('../config/constants');
 const { preProcessCommands } = require('../utils/processCommand');
-
-const validator = require('../utils/validator');
-const { registerSchema, deRegisterSchema } = require('../validation/common');
 const { homedir } = constants;
 
 if (process.platform === constants.platforms.macos) {
@@ -33,7 +30,7 @@ const getDefaultApp = async (protocol) => {
 };
 
 /**
- * Checks if the given protocal already exist on not
+ * Checks if the given protocol already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
@@ -50,18 +47,12 @@ const checkIfExists = async (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
- * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
  * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
- * @param {function (err)} cb - callback function Optional
+ * @returns {Promise}
  */
-
-const register = async (options, cb) => {
-    let res = null;
-    const validOptions = validator(registerSchema, options);
-    const { protocol, override, terminal } = validOptions;
-    let { command } = validOptions;
-    if (cb && typeof cb !== 'function')
-        throw new Error('Callback is not function');
+const register = async (options) => {
+    const { protocol, override, terminal } = options;
+    let { command } = options;
     let tempDir = null;
 
     try {
@@ -149,26 +140,21 @@ const register = async (options, cb) => {
         });
 
         if (scriptResult.code != 0) throw new Error(scriptResult.stderr);
-    } catch (e) {
-        if (!cb) throw e;
-        res = e;
     } finally {
         if (tempDir) {
             fs.rmSync(tempDir, { recursive: true, force: true });
         }
     }
-    if (cb) return cb(res);
 };
 
 /**
  * Removes the registration of the given protocol
- * @param {string=} protocol - Protocol on which is required to be checked.
  * @param {object?} [options={}] - the options
+ * @param {string=} options.protocol - Protocol on which is required to be checked.
  * @param {boolean=} options.force - This will delete the app even if it is not created by this module
  * @returns {Promise}
  */
-const deRegister = async (protocol, options = {}) => {
-    const validOptions = validator(deRegisterSchema, options);
+const deRegister = async ({ protocol, force }) => {
     const defaultApp = await getDefaultApp(protocol);
     if (!defaultApp) return;
 
@@ -180,7 +166,7 @@ const deRegister = async (protocol, options = {}) => {
         appPlist.CFBundleIdentifier || ''
     ).startsWith('com.protocol.registry');
 
-    if (validOptions.force || registeredByThisModule) {
+    if (force || registeredByThisModule) {
         // delete the app
         fs.rmSync(defaultApp, {
             recursive: true,
@@ -206,7 +192,7 @@ const deRegister = async (protocol, options = {}) => {
             fs.rmSync(internalProtocolDir, { recursive: true, force: true });
         }
     } catch (e) {
-        console.log('Ignored Error: ', e);
+        console.debug('Ignored Error for deleting intermittent files: ', e);
     }
 };
 

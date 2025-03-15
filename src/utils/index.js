@@ -8,7 +8,7 @@ const validator = require('../utils/validator');
 const { registerSchema } = require('../validation/common');
 
 /**
- * Checks if the given protocal already exist on not
+ * Checks if the given protocol already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
