@@ -24,7 +24,9 @@ beforeEach(async () => {
 
 afterEach(async () => {
     await ProtocolRegistry.deRegister(protocol, { force: true });
-    if (fs.existsSync(homedir)) fs.rmdirSync(homedir, { recursive: true });
+    if (fs.existsSync(homedir)) {
+        fs.rmSync(homedir, { recursive: true, force: true });
+    }
 });
 
 test('Check if exist should be false if protocol is not registered', async () => {
