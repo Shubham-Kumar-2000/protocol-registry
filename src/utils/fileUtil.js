@@ -2,14 +2,16 @@ const fs = require('fs');
 
 const checkAndRemoveProtocolSchema = (filePaths, protocolSchemaName) => {
     for (const filePath of filePaths) {
-        const fileData = fs.readFileSync(filePath, 'utf-8');
-        const lines = fileData.split('\n');
-        const filteredLines = lines.filter(
-            (line) => line !== protocolSchemaName
-        );
+        if (fs.existsSync(filePath)) {
+            const fileData = fs.readFileSync(filePath, 'utf-8');
+            const lines = fileData.split('\n');
+            const filteredLines = lines.filter(
+                (line) => line !== protocolSchemaName
+            );
 
-        if (filteredLines && filteredLines.length > 1) {
-            fs.writeFileSync(filePath, filteredLines.join('\n'));
+            if (filteredLines && filteredLines.length > 1) {
+                fs.writeFileSync(filePath, filteredLines.join('\n'));
+            }
         }
     }
 };
