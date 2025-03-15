@@ -27,11 +27,11 @@ afterEach(async () => {
     if (fs.existsSync(homedir)) fs.rmdirSync(homedir, { recursive: true });
 });
 
-test('check if exist should be false if protocol not registered', async () => {
+test('Check if exist should be false if protocol is not registered', async () => {
     expect(await ProtocolRegistry.checkifExists(protocol)).toBeFalsy();
 });
 
-test('check if exist should be true if protocol is registered', async () => {
+test('Check if exist should be true if protocol is registered', async () => {
     await ProtocolRegistry.register({
         protocol,
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
@@ -44,7 +44,7 @@ test('check if exist should be true if protocol is registered', async () => {
     expect(await ProtocolRegistry.checkifExists(protocol)).toBeTruthy();
 });
 
-test('deRegister should remove the protocol', async () => {
+test('Check if deRegister should remove the protocol', async () => {
     await ProtocolRegistry.register({
         protocol,
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
@@ -59,7 +59,7 @@ test('deRegister should remove the protocol', async () => {
     expect(await ProtocolRegistry.checkifExists(protocol)).toBeFalsy();
 });
 
-test('deRegister should delete the apps if registered through this module', async () => {
+test('Check if deRegister should delete the apps if registered through this module', async () => {
     await ProtocolRegistry.register({
         protocol,
         command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
@@ -72,4 +72,30 @@ test('deRegister should delete the apps if registered through this module', asyn
     await ProtocolRegistry.deRegister(protocol);
 
     expect(Object.values(fs.readdirSync(homedir).entries())).toHaveLength(0);
+});
+
+test('Check if app should be registered again post the same app is deRegistered', async () => {
+    await ProtocolRegistry.register({
+        protocol,
+        command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
+        override: true,
+        terminal: false,
+        script: true,
+        scriptName: 'my-custom-script-name'
+    });
+
+    await ProtocolRegistry.deRegister(protocol);
+
+    expect(await ProtocolRegistry.checkifExists(protocol)).toBeFalsy();
+
+    await ProtocolRegistry.register({
+        protocol,
+        command: `node '${path.join(__dirname, './tester.js')}' $_URL_`,
+        override: true,
+        terminal: false,
+        script: true,
+        scriptName: 'my-custom-script-name'
+    });
+
+    expect(await ProtocolRegistry.checkifExists(protocol)).toBeTruthy();
 });

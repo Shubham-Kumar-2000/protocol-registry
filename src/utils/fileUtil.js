@@ -1,31 +1,24 @@
 const fs = require('fs');
 
-const findAndDeleteLine = (configPath, searchString) => {
-    const removedLines = [];
+const checkAndRemoveProtocolSchema = (filePaths, protocolSchemaName) => {
+    let hasProtocolSchema = false;
 
-    for (const filePath of configPath) {
-        try {
-            const fileData = fs.readFileSync(filePath, 'utf-8');
-            const lines = fileData.split('\n');
-            const filteredLines = lines.filter(
-                (line) => !line.includes(searchString)
-            );
+    for (const filePath of filePaths) {
+        const fileData = fs.readFileSync(filePath, 'utf-8');
+        const lines = fileData.split('\n');
+        const filteredLines = lines.filter(
+            (line) => line !== protocolSchemaName
+        );
 
-            if (lines.length !== filteredLines.length) {
-                const removedLine = lines.find((line) =>
-                    line.includes(searchString)
-                );
-                removedLines.push({ filePath, removedLine });
-            }
-            if (filteredLines && filteredLines.length > 1) {
-                fs.writeFileSync(filePath, filteredLines.join('\n'));
-            }
-        } catch (error) {
-            console.error(`Error processing ${filePath}:`, error);
+        if (lines.length !== filteredLines.length) {
+            hasProtocolSchema = true;
+        }
+        if (filteredLines && filteredLines.length > 1) {
+            fs.writeFileSync(filePath, filteredLines.join('\n'));
         }
     }
 
-    return removedLines;
+    return hasProtocolSchema;
 };
 
 const checkIfFolderExists = (directoryPath) => {
@@ -52,8 +45,21 @@ const checkIfFileExists = (filePath) => {
     }
 };
 
+const fileContainsExactLine = (fileContent, searchLine) => {
+    const lines = fileContent.split('\n');
+
+    for (const line of lines) {
+        if (line === searchLine) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 module.exports = {
-    findAndDeleteLine,
+    checkAndRemoveProtocolSchema,
     checkIfFolderExists,
-    checkIfFileExists
+    checkIfFileExists,
+    fileContainsExactLine
 };

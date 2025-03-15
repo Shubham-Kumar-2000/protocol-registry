@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
@@ -5,19 +6,15 @@ const shell = require('../utils/shell');
 const { preProcessCommands } = require('../utils/processCommand');
 const constants = require('../config/constants');
 const validator = require('../utils/validator');
-const { registerSchema } = require('../validation/common');
+const { registerSchema, deRegisterSchema } = require('../validation/common');
 const {
-    findAndDeleteLine,
+    checkAndRemoveProtocolSchema,
     checkIfFolderExists,
-    checkIfFileExists
+    checkIfFileExists,
+    fileContainsExactLine
 } = require('../utils/fileUtil');
 
-/**
- * Checks if the given protocal already exist on not
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @returns {Promise}
- */
-const checkifExists = async (protocol) => {
+const getDefaultApp = async (protocol) => {
     const res = await shell.exec(
         `xdg-mime query default x-scheme-handler/${protocol}`,
         { silent: true }
@@ -31,7 +28,7 @@ const checkifExists = async (protocol) => {
         constants.desktops.current === 'KDE' &&
         res.code === constants.desktops.KDE.noProtoExitCode
     ) {
-        return false;
+        return null;
     }
 
     if (res.code !== 0 || res.stderr) {
@@ -39,10 +36,21 @@ const checkifExists = async (protocol) => {
     }
 
     if (res.stdout && res.stdout.length > 0) {
-        return true;
+        return res.stdout.trim() !== '' ? res.stdout.trim() : null;
     }
 
-    return false;
+    return null;
+};
+
+/**
+ * Checks if the given protocol already exist on not
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
+const checkifExists = async (protocol) => {
+    const defaultApp = await getDefaultApp(protocol);
+
+    return defaultApp !== null;
 };
 
 /**
@@ -137,34 +145,37 @@ const register = async (options, cb) => {
 };
 
 /**
- * DeRegisters the given protocol
- * @param {string=} protocol - Protocol on which the deRegistry should run.
+ * Removes the registration of the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @param {object?} [options={}] - the options
+ * @param {boolean=} options.force - This will delete the app even if it is not created by this module
+ * @returns {Promise}
  */
-const deRegister = async (protocol) => {
+const deRegister = async (protocol, options = {}) => {
+    const validOptions = validator(deRegisterSchema, options);
+
     const exist = await checkifExists(protocol);
 
     if (!exist) {
-        throw new Error('Protocol does not exists.');
+        return;
     }
 
-    const configPath = [
+    const defaultApp = await getDefaultApp(protocol);
+
+    const configPaths = [
         join(process.env.HOME, '.config', 'mimeapps.list'),
         join(process.env.HOME, '.local/share/applications', 'mimeapps.list')
     ];
 
-    const removedLines = findAndDeleteLine(configPath, protocol);
-    if (removedLines.length > 0) {
-        let desktopFileName = null;
-        removedLines.forEach((result) => {
-            console.log(`From ${result.filePath}: ${result.removedLine}`);
-            desktopFileName = result.removedLine.split('=');
-            return;
-        });
-
+    const hasProtocolSchema = checkAndRemoveProtocolSchema(
+        configPaths,
+        `x-scheme-handler/${protocol}=${defaultApp}`
+    );
+    if (hasProtocolSchema) {
         const desktopFilePath = join(
             process.env.HOME,
             '.local/share/applications',
-            desktopFileName[1]
+            defaultApp
         );
         const desktopFilePaths = [desktopFilePath];
 
@@ -180,29 +191,29 @@ const deRegister = async (protocol) => {
 
                     if (isApplicationFolderExist) {
                         desktopFilePaths.push(
-                            join(path, 'applications', desktopFileName[1])
+                            join(path, 'applications', defaultApp)
                         );
                     }
                 });
             }
         }
-
         desktopFilePaths.forEach((desktopFilePath) => {
             if (checkIfFileExists(desktopFilePath)) {
                 const fileData = fs.readFileSync(desktopFilePath, 'utf-8');
-                const fileLines = fileData.split('\n');
+                const registeredByThisModule = fileContainsExactLine(
+                    fileData,
+                    `PRIdentifier=com.protocol.registry.${protocol}`
+                );
 
-                const filteredDesktopLines = fileLines.filter(
-                    (line) => !line.includes('MimeType')
-                );
-                fs.writeFileSync(
-                    desktopFilePath,
-                    filteredDesktopLines.join('\n')
-                );
+                if (registeredByThisModule || validOptions.force) {
+                    // delete the desktop app if created by this protocol
+                    fs.rmSync(desktopFilePath, {
+                        recursive: true,
+                        force: true
+                    });
+                }
             }
         });
-    } else {
-        console.log('No lines containing the search string were found.');
     }
 };
 
