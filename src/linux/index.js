@@ -61,7 +61,7 @@ const checkIfExists = async (protocol) => {
  * @returns {Promise}
  */
 const register = async (options) => {
-    const { protocol, override, terminal } = options;
+    const { protocol, override, terminal, appName } = options;
     let { command } = options;
 
     let tempDir = null;
@@ -74,7 +74,9 @@ const register = async (options) => {
 
         tempDir = constants.tmpdir(protocol);
 
-        const desktopFileName = `${protocol}.desktop`;
+        const desktopFileName = appName
+            ? `${appName}.desktop`
+            : `url-${protocol}.desktop`;
         const desktopFilePath = join(tempDir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
