@@ -1,9 +1,28 @@
 const Registry = require('winreg');
+const fs = require('fs');
 const { preProcessCommands } = require('../utils/processCommand');
 
 const validator = require('../utils/validator');
-const { registerSchema } = require('../validation/common');
+const { registerSchema, deRegisterSchema } = require('../validation/common');
+const { join } = require('path');
+const { homedir } = require('../config/constants');
 const { setRegistry } = require('./registrySet');
+
+const getRegistry = (protocol) => {
+    const keyPath = '\\Software\\Classes\\' + protocol;
+    const registry = new Registry({
+        hive: Registry.HKCU,
+        key: keyPath
+    });
+
+    const cmdPath = keyPath + '\\shell\\open\\command';
+    const commandRegistry = new Registry({
+        hive: Registry.HKCU,
+        key: cmdPath
+    });
+
+    return { registry, commandRegistry };
+};
 
 /**
  * Checks if the given protocal already exist on not
@@ -11,11 +30,8 @@ const { setRegistry } = require('./registrySet');
  * @returns {Promise}
  */
 const checkifExists = (protocol) => {
+    const { registry } = getRegistry(protocol);
     return new Promise((resolve, reject) => {
-        const registry = new Registry({
-            hive: Registry.HKCU,
-            key: '\\Software\\Classes\\' + protocol
-        });
         registry.keyExists((err, exist) => {
             if (err) return reject(err);
             resolve(exist);
@@ -56,12 +72,7 @@ const register = async (options, cb) => {
     // Software\Classes", which is inherited by "HKEY_CLASSES_ROOT"
     // anyway, and can be written by unprivileged users.
     try {
-        const keyPath = '\\Software\\Classes\\' + protocol;
-        const registry = new Registry({
-            hive: Registry.HKCU,
-            key: keyPath
-        });
-
+        const { registry, commandRegistry } = getRegistry(protocol);
         const exist = await checkifExists(protocol);
 
         if (exist) {
@@ -88,7 +99,6 @@ const register = async (options, cb) => {
         );
 
         const urlDecl = 'URL:' + protocol;
-        const cmdPath = keyPath + '\\shell\\open\\command';
 
         await setRegistry(registry, {
             name: 'URL Protocol',
@@ -99,11 +109,6 @@ const register = async (options, cb) => {
             name: Registry.DEFAULT_VALUE,
             type: Registry.REG_SZ,
             value: urlDecl
-        });
-
-        const commandRegistry = new Registry({
-            hive: Registry.HKCU,
-            key: cmdPath
         });
 
         await setRegistry(commandRegistry, {
@@ -117,7 +122,35 @@ const register = async (options, cb) => {
     }
     if (cb) return cb(res);
 };
+
+/**
+ * Removes the registration of the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @param {object} [options={}] - the options
+ * @param {boolean=} options.force - This option has no effect in windows
+ * @returns {Promise}
+ */
+const deRegister = async (protocol, options = {}) => {
+    validator(deRegisterSchema, options);
+    const { registry } = getRegistry(protocol);
+    const exists = await checkifExists(protocol);
+    if (!exists) return;
+
+    const internalProtocolDir = join(homedir, protocol);
+    if (fs.existsSync(internalProtocolDir)) {
+        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
+    }
+
+    return new Promise((resolve, reject) => {
+        registry.destroy((err) => {
+            if (err) return reject(err);
+            return resolve();
+        });
+    });
+};
+
 module.exports = {
     checkifExists,
-    register
+    register,
+    deRegister
 };

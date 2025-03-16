@@ -12,3 +12,7 @@ exports.registerSchema = Joi.object({
         .min(3)
         .regex(/^[a-zA-Z0-9-]+$/)
 });
+
+exports.deRegisterSchema = Joi.object({
+    force: Joi.boolean()
+});
