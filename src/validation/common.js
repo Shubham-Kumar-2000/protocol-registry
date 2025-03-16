@@ -11,7 +11,7 @@ exports.registerSchema = Joi.object({
     command: Joi.string().required(),
     override: Joi.boolean().default(false),
     terminal: Joi.boolean().default(false),
-    scriptName: Joi.string()
+    appName: Joi.string()
         .min(3)
         .regex(/^[a-zA-Z0-9-]+$/)
 });

@@ -44,7 +44,7 @@ ProtocolRegistry.register(
     {
         override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
         terminal: true, // Use this to run your command inside a terminal
-        scriptName: 'my-custom-script-name' // Custom app name.
+        appName: 'my-custom-script-name' // Custom app name.
     }
 ).then(async () => {
     console.log('Successfully registered');
@@ -216,7 +216,7 @@ ProtocolRegistry.register(
   commands,
   {
     terminal: true, // Terminal is set to false
-    scriptName: 'my-custom-script-name' // This is the name of the app file that will be created.
+    appName: 'my-custom-script-name' // This is the name of the app file that will be created.
   }
 );
 // the above code will save your commands to a custom app file

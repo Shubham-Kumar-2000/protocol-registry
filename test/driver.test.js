@@ -40,7 +40,7 @@ test('Check if exist should be true if protocol is registered', async () => {
         {
             override: true,
             terminal: false,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -54,7 +54,7 @@ test('Check if deRegister should remove the protocol', async () => {
         {
             override: true,
             terminal: false,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -70,7 +70,7 @@ test('Check if deRegister should delete the apps if registered through this modu
         {
             override: true,
             terminal: true,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -86,7 +86,7 @@ test('Check if deRegister should not delete the homedir if other registered apps
         {
             override: true,
             terminal: true,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -96,7 +96,7 @@ test('Check if deRegister should not delete the homedir if other registered apps
         {
             override: true,
             terminal: true,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -112,7 +112,7 @@ test('Check if app should be registered again post the same app is deRegistered'
         {
             override: true,
             terminal: false,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 
@@ -126,7 +126,7 @@ test('Check if app should be registered again post the same app is deRegistered'
         {
             override: false,
             terminal: false,
-            scriptName: 'my-custom-script-name'
+            appName: 'my-custom-script-name'
         }
     );
 

@@ -48,7 +48,7 @@ const checkIfExists = async (protocol) => {
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
  * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
- * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
+ * @param {string=} options.appName - Name of the app will be by default it will be ${protocol}.sh
  * @param {function (err)} cb - callback function Optional
  */
 
@@ -76,11 +76,7 @@ const register = async (options, cb) => {
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');
 
-        command = await preProcessCommands(
-            protocol,
-            command,
-            options.scriptName
-        );
+        command = await preProcessCommands(protocol, command, options.appName);
 
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(

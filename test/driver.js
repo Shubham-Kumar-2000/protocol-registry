@@ -10,7 +10,7 @@ ProtocolRegistry.register(
         override: true,
         terminal: true,
         script: true,
-        scriptName: 'my-custom-script-name'
+        appName: 'my-custom-script-name'
     }
 ).then(async () => {
     console.log('Successfully registered');

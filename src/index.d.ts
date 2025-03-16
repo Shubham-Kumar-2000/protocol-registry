@@ -16,10 +16,10 @@ declare namespace ProtocolRegistry {
     terminal?: boolean;
     /**
      * **default ${protocol}.**
-     * This is the name of the script file that will be created if script option is set true.
+     * This will be app name of your registered protocol
      * It is recommended to use the default value.
      */
-    scriptName?: string;
+    appName?: string;
   };
 
   export type DeRegisterOptions = {
