@@ -26,6 +26,19 @@ function getRegExePath() {
     }
 }
 
+function trimQuotesIfPresent(value) {
+    if (
+        value.length >= 2 &&
+        ((value[0] === '"' && value[value.length - 1] === '"') ||
+            // eslint-disable-next-line quotes
+            (value[0] === "'" && value[value.length - 1] === "'"))
+    ) {
+        return value.slice(1, value.length - 1);
+    }
+
+    return value;
+}
+
 exports.setRegistry = (registry, options) => {
     return new Promise((resolve, reject) => {
         const { name, type, value } = options;
@@ -33,7 +46,7 @@ exports.setRegistry = (registry, options) => {
         if (REG_TYPES.indexOf(type) == -1)
             throw Error('illegal type specified.');
 
-        let args = ['ADD', this.path];
+        let args = ['ADD', trimQuotesIfPresent(registry.path)];
         if (name == '') args.push('/ve');
         else args = args.concat(['/v', name]);
 
@@ -46,7 +59,6 @@ exports.setRegistry = (registry, options) => {
         const proc = spawn(getRegExePath(), args, {
             cwd: undefined,
             env: process.env,
-            shell: false,
             windowsHide: true,
             stdio: ['ignore', 'pipe', 'pipe']
         });
