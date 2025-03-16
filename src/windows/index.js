@@ -6,7 +6,7 @@ const validator = require('../utils/validator');
 const { registerSchema, deRegisterSchema } = require('../validation/common');
 const { join } = require('path');
 const { homedir } = require('../config/constants');
-const { setRegistry } = require('./registrySet');
+const { setRegistry } = require('./registry');
 
 const getRegistry = (protocol) => {
     const keyPath = '\\Software\\Classes\\' + protocol;
