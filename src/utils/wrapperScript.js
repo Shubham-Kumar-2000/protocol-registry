@@ -59,17 +59,17 @@ const getWrapperScriptContent = (command) => {
     });
 };
 
-const saveWrapperScript = (protocol, content, scriptName) => {
+const saveWrapperScript = (protocol, content) => {
     if (existsSync(join(homedir, `./${protocol}`))) {
         rmSync(join(homedir, `./${protocol}`), {
             recursive: true,
             force: true
         });
     }
-    mkdirSync(join(homedir, `./${protocol}`));
+    mkdirSync(join(homedir, `./${protocol}`), { recursive: true });
     const wrapperScriptPath = join(
         homedir,
-        `./${protocol}/${scriptName || protocol}.${
+        `./${protocol}/${protocol}-internal-script.${
             process.platform === constants.platforms.windows ? 'bat' : 'sh'
         }`
     );
@@ -77,9 +77,9 @@ const saveWrapperScript = (protocol, content, scriptName) => {
     return wrapperScriptPath;
 };
 
-exports.handleWrapperScript = async (protocol, command, scriptName) => {
+exports.handleWrapperScript = async (protocol, command) => {
     const contents = await getWrapperScriptContent(command);
-    const scriptPath = saveWrapperScript(protocol, contents, scriptName);
+    const scriptPath = saveWrapperScript(protocol, contents);
     if (process.platform !== constants.platforms.windows) {
         const chmod = await shell.exec('chmod +x "' + scriptPath + '"');
         if (chmod.code != 0 || chmod.stderr) throw new Error(chmod.stderr);

@@ -1,18 +1,22 @@
 const Joi = require('joi');
 
+const protocolSchema = Joi.string()
+    .regex(/^[a-zA-Z]+$/)
+    .required();
+
+exports.checkIfExistsSchema = protocolSchema;
+
 exports.registerSchema = Joi.object({
-    protocol: Joi.string()
-        .regex(/^[a-zA-Z]+$/)
-        .required(),
+    protocol: protocolSchema,
     command: Joi.string().required(),
-    override: Joi.boolean(),
-    terminal: Joi.boolean(),
-    script: Joi.boolean(),
-    scriptName: Joi.string()
+    override: Joi.boolean().default(false),
+    terminal: Joi.boolean().default(false),
+    appName: Joi.string()
         .min(3)
-        .regex(/^[a-zA-Z0-9-]+$/)
+        .regex(/^[a-zA-Z0-9- ]+$/)
 });
 
 exports.deRegisterSchema = Joi.object({
+    protocol: protocolSchema,
     force: Joi.boolean()
 });
