@@ -66,7 +66,7 @@ const saveWrapperScript = (protocol, content) => {
             force: true
         });
     }
-    mkdirSync(join(homedir, `./${protocol}`));
+    mkdirSync(join(homedir, `./${protocol}`), { recursive: true });
     const wrapperScriptPath = join(
         homedir,
         `./${protocol}/${protocol}-internal-script.${

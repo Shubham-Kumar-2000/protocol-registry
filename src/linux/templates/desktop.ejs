@@ -1,8 +1,10 @@
 [Desktop Entry]
 Type=Application
 Name=<%= appName %> 
-Exec=<%if (terminal) { %><%- command %>; exec bash <% } else { %><%- command %> <% } %>
+Exec=<%- command %> 
 StartupNotify=false
 Terminal=<%= terminal  ? 'true' : 'false'  %>
 MimeType=x-scheme-handler/<%= protocol %>;
 PRIdentifier=com.protocol.registry.<%= protocol %>
+NoDisplay=true
+X-Scheme-Handler=<%= protocol %>
