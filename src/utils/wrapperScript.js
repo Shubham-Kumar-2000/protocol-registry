@@ -69,7 +69,7 @@ const saveWrapperScript = (protocol, content) => {
     mkdirSync(join(homedir, `./${protocol}`));
     const wrapperScriptPath = join(
         homedir,
-        `./${protocol}/url-${protocol}.${
+        `./${protocol}/${protocol}-internal-script.${
             process.platform === constants.platforms.windows ? 'bat' : 'sh'
         }`
     );
