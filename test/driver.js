@@ -4,16 +4,15 @@ const ProtocolRegistry = require('../src');
 
 console.log('Registering...');
 ProtocolRegistry.register(
-    'testproto',
+    'testprotofs',
     `node '${path.join(__dirname, './tester.js')}' $_URL_`,
     {
         override: true,
         terminal: true,
-        script: true,
-        appName: 'my-custom-script-name'
+        appName: 'My-Custom App 007'
     }
 ).then(async () => {
     console.log('Successfully registered');
 });
 
-ProtocolRegistry.checkIfExists('testproto').then(console.log);
+ProtocolRegistry.checkIfExists('testprotofs').then(console.log);

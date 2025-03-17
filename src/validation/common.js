@@ -13,7 +13,7 @@ exports.registerSchema = Joi.object({
     terminal: Joi.boolean().default(false),
     appName: Joi.string()
         .min(3)
-        .regex(/^[a-zA-Z0-9-]+$/)
+        .regex(/^[a-zA-Z0-9- ]+$/)
 });
 
 exports.deRegisterSchema = Joi.object({
