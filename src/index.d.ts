@@ -15,9 +15,8 @@ declare namespace ProtocolRegistry {
      */
     terminal?: boolean;
     /**
-     * **default ${protocol}.**
+     * **default url-${protocol}.**
      * This will be app name of your registered protocol
-     * It is recommended to use the default value.
      */
     appName?: string;
   };

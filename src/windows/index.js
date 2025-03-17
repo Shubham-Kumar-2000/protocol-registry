@@ -43,7 +43,7 @@ const checkIfExists = (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
- * @param {string=} options.appName - Name of the app will be by default it will be ${protocol}.sh
+ * @param {string=} options.appName - Name of the app by default it will be `url-${protocol}`
  * @param {function (err)} cb - callback function Optional
  */
 const register = async (options) => {
@@ -76,7 +76,7 @@ const register = async (options) => {
             })
         );
     }
-    command = await preProcessCommands(protocol, command, options.appName);
+    command = await preProcessCommands(protocol, command);
 
     await new Promise((resolve, reject) =>
         registry.create((err) => {
