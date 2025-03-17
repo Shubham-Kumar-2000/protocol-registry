@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=<%= appName %> 
-Exec=<%if (terminal) { %>/bin/bash -c "<%- command %>" <% } else { %><%- command %> <% } %>
+Exec=<%if (terminal) { %><%- command %>; exec bash <% } else { %><%- command %> <% } %>
 StartupNotify=false
 Terminal=<%= terminal  ? 'true' : 'false'  %>
 MimeType=x-scheme-handler/<%= protocol %>;
