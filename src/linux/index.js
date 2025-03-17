@@ -74,7 +74,7 @@ const register = async (options) => {
 
         tempDir = constants.tmpdir(protocol);
 
-        const desktopFileName = `${appName}.desktop`;
+        const desktopFileName = `${appName.replace(' ', '_')}.desktop`;
         const desktopFilePath = join(tempDir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
@@ -85,7 +85,7 @@ const register = async (options) => {
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 desktopTemplate,
-                { protocol, command, terminal },
+                { protocol, command, terminal, appName },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
