@@ -1,7 +1,7 @@
 const { handleWrapperScript } = require('./wrapperScript');
 
-const preProcessCommands = async (protocol, command, scriptName) => {
-    const newCommand = await handleWrapperScript(protocol, command, scriptName);
+const preProcessCommands = async (protocol, command) => {
+    const newCommand = await handleWrapperScript(protocol, command);
     return newCommand;
 };
 module.exports = {

@@ -32,7 +32,7 @@ const platform = getPlatform();
  * @param {object} options - the options
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
- * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
+ * @param {string=} options.appName - Name of the app by default it will be `url-${protocol}`
  * @returns {Promise}
  */
 const register = async (protocol, command, options = {}) => {
@@ -40,6 +40,10 @@ const register = async (protocol, command, options = {}) => {
 
     if (!fs.existsSync(homedir)) {
         fs.mkdirSync(homedir);
+    }
+
+    if (!validatedOptions.appName) {
+        validatedOptions.appName = `url-${validatedOptions.protocol}`;
     }
 
     return platform.register(validatedOptions);
