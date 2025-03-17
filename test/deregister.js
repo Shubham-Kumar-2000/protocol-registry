@@ -6,4 +6,4 @@ ProtocolRegistry.deRegister('testproto').then(() => {
     console.log('Deregistered done!');
 });
 
-ProtocolRegistry.checkIfExists('testproto').then(console.log);
+ProtocolRegistry.checkifExists('testproto').then(console.log);
