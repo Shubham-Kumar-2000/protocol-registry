@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=URL <%= protocol %> 
-Exec=<%- command %>
+Exec=/bin/bash -c "<%- command %>"
 StartupNotify=false
 Terminal=<%= terminal  ? 'true' : 'false'  %>
 MimeType=x-scheme-handler/<%= protocol %>;
