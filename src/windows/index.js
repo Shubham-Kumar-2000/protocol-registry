@@ -86,8 +86,6 @@ const register = async (options) => {
         })
     );
 
-    const urlDecl = 'URL:' + protocol;
-
     await setRegistry(registry, {
         name: 'URL Protocol',
         type: Registry.REG_SZ,
@@ -96,7 +94,7 @@ const register = async (options) => {
     await setRegistry(registry, {
         name: Registry.DEFAULT_VALUE,
         type: Registry.REG_SZ,
-        value: urlDecl
+        value: options.appName
     });
 
     await setRegistry(commandRegistry, {

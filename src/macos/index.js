@@ -74,7 +74,7 @@ const register = async (options) => {
 
         const urlAppTemplate = join(__dirname, './templates', 'url-app.ejs');
         const urlAppSource = join(tempDir, `URL-${protocol}.txt`);
-        const urlAppPath = join(homedir, protocol, `URL-${protocol}.app`);
+        const urlAppPath = join(homedir, protocol, `${options.appName}.app`);
 
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');

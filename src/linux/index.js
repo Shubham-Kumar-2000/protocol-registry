@@ -74,9 +74,7 @@ const register = async (options) => {
 
         tempDir = constants.tmpdir(protocol);
 
-        const desktopFileName = appName
-            ? `${appName}.desktop`
-            : `url-${protocol}.desktop`;
+        const desktopFileName = `${appName}.desktop`;
         const desktopFilePath = join(tempDir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
