@@ -4,6 +4,7 @@ const { preProcessCommands } = require('../utils/processCommand');
 
 const { join } = require('path');
 const { homedir } = require('../config/constants');
+const { setRegistry } = require('./registry');
 
 const getRegistry = (protocol) => {
     const keyPath = '\\Software\\Classes\\' + protocol;
@@ -87,40 +88,22 @@ const register = async (options) => {
 
     const urlDecl = 'URL:' + protocol;
 
-    await new Promise((resolve, reject) =>
-        registry.set(
-            'URL Protocol',
-            Registry.REG_SZ,
-            Registry.DEFAULT_VALUE,
-            (err) => {
-                if (err) return reject(err);
-                return resolve(true);
-            }
-        )
-    );
-    await new Promise((resolve, reject) =>
-        registry.set(
-            Registry.DEFAULT_VALUE,
-            Registry.REG_SZ,
-            urlDecl,
-            (err) => {
-                if (err) return reject(err);
-                return resolve(true);
-            }
-        )
-    );
+    await setRegistry(registry, {
+        name: 'URL Protocol',
+        type: Registry.REG_SZ,
+        value: Registry.DEFAULT_VALUE
+    });
+    await setRegistry(registry, {
+        name: Registry.DEFAULT_VALUE,
+        type: Registry.REG_SZ,
+        value: urlDecl
+    });
 
-    await new Promise((resolve, reject) =>
-        commandRegistry.set(
-            Registry.DEFAULT_VALUE,
-            Registry.REG_SZ,
-            terminal ? `cmd /k "${command}"` : command,
-            (err) => {
-                if (err) return reject(err);
-                return resolve(true);
-            }
-        )
-    );
+    await setRegistry(commandRegistry, {
+        name: Registry.DEFAULT_VALUE,
+        type: Registry.REG_SZ,
+        value: terminal ? `cmd /k "${command}"` : command
+    });
 };
 
 /**
