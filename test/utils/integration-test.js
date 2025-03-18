@@ -69,7 +69,7 @@ const openProtocol = async (protocol) => {
             ? `start "${protocol}" "${url}"`
             : `open '${url}'`;
     if (process.platform === constants.platforms.linux) {
-        command = `sh -x open '${url}'`;
+        command = `which xdg-open; xdg-open '${url}'`;
     }
 
     const result = await shell.exec(command);
