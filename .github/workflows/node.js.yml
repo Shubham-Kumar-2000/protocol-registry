@@ -32,6 +32,7 @@ jobs:
     - run: sudo apt clean
     - run: sudo apt-get install -y libglib2.0-dev
     - run: gio --version
+    - run: sudo apt-get install -y xterm
     - run: mkdir -p ~/.local/share/applications
     - run: npm i
     - run: npm run build --if-present
