@@ -66,6 +66,7 @@ const checkRegistration = async (protocol, options) => {
         wsServer.on('connection', (ws) => {
             ws.on('message', (message) => {
                 ws.send('Thanks');
+                console.log(message);
                 resolve(JSON.parse(message));
             });
         });
