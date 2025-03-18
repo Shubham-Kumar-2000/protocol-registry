@@ -1,5 +1,11 @@
 const path = require('path');
-const { test, expect, afterEach } = require('@jest/globals');
+const {
+    test,
+    expect,
+    afterEach,
+    beforeAll,
+    afterAll
+} = require('@jest/globals');
 const { homedir } = require('../src/config/constants');
 const fs = require('fs');
 
@@ -26,12 +32,20 @@ const getCommand = () => {
     }`;
 };
 
+beforeAll(async () => {
+    await ProtocolRegistry.deRegister(protocol, { force: true });
+});
+
 afterEach(async () => {
     await sleep();
     await ProtocolRegistry.deRegister(protocol, { force: true });
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
     }
+});
+
+afterAll(async () => {
+    await ProtocolRegistry.deRegister(protocol, { force: true });
 });
 
 test.each([
