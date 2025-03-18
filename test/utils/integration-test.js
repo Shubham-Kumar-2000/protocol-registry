@@ -69,7 +69,7 @@ const openProtocol = async (protocol) => {
             ? `start "${protocol}" "${url}"`
             : `open '${url}'`;
     if (process.platform === constants.platforms.linux) {
-        command = `sh -x /usr/bin/xdg-open '${url}'`;
+        command = `gnome-open '${url}'`;
     }
 
     const result = await shell.exec(command);
