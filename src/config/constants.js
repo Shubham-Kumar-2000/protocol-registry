@@ -15,6 +15,7 @@ const constants = {
         }
     },
     homedir: join(os.homedir(), '.protocol-registry'),
+    osHomeDir: os.homedir(),
     urlArgument: {
         win32: '%1',
         win32InScript: '%~1%',
