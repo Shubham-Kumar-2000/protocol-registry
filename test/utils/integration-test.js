@@ -31,7 +31,10 @@ const grantPermissions = async (protocol, options) => {
     if (identifier.code != 0 || identifier.stderr)
         throw new Error(identifier.stderr);
 
-    console.log(identifier);
+    console.log(
+        identifier.stdout.trim(),
+        'sudo tccutil --insert Accessibility ' + identifier.stdout.trim()
+    );
 
     const result = await shell.exec(
         'sudo tccutil --insert Accessibility ' + identifier.stdout.trim(),
