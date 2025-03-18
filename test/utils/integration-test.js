@@ -69,7 +69,11 @@ const openProtocol = async (protocol) => {
             ? `start "${protocol}" "${url}"`
             : `open '${url}'`;
     const result = await shell.exec(command);
-    if (result.code != 0 || result.stderr) throw new Error(result.stderr);
+    if (result.code != 0 || result.stderr) {
+        console.error(result.stdout);
+        console.error(result.stderr);
+        throw new Error(result.stderr);
+    }
     return url;
 };
 
