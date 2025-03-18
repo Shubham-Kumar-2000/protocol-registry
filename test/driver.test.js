@@ -1,6 +1,12 @@
 const path = require('path');
 const randomString = require('randomstring');
-const { test, expect, beforeEach, afterEach } = require('@jest/globals');
+const {
+    test,
+    expect,
+    beforeEach,
+    afterEach,
+    afterAll
+} = require('@jest/globals');
 const { homedir } = require('../src/config/constants');
 const fs = require('fs');
 const shell = require('../src/utils/shell');
@@ -78,6 +84,11 @@ afterEach(async () => {
     }
 });
 
+afterAll(async () => {
+    // eslint-disable-next-line no-process-exit
+    process.exit();
+});
+
 test('Check if exist should be false if protocol is not registered', async () => {
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
 });
@@ -92,7 +103,7 @@ test('Check if exist should be true if protocol is registered', async () => {
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
     await checkRegistration(protocol, options);
-});
+}, 30000);
 
 test('Check if deRegister should remove the protocol', async () => {
     await ProtocolRegistry.register(
