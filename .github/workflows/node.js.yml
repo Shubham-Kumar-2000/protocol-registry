@@ -30,13 +30,12 @@ jobs:
         cache: 'npm'
     - run: sudo apt-get update
     - run: sudo apt clean
-    - run: sudo apt-get install -y libglib2.0-dev
+    - run: sudo apt-get install -y libglib2.0-dev xvfb xterm
     - run: gio --version
-    - run: sudo apt-get install -y xterm
     - run: mkdir -p ~/.local/share/applications
     - run: npm i
     - run: npm run build --if-present
-    - run: npm run check
+    - run: xvfb-run npm run check
     
   windows:
 
