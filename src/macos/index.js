@@ -5,7 +5,6 @@ const plist = require('plist');
 const shell = require('../utils/shell');
 
 const constants = require('../config/constants');
-const { preProcessCommands } = require('../utils/processCommand');
 const { homedir } = constants;
 
 if (process.platform === constants.platforms.macos) {
@@ -18,6 +17,11 @@ if (process.platform === constants.platforms.macos) {
         });
 }
 
+/**
+ * Fetches the default app for the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
 const getDefaultApp = async (protocol) => {
     const res = await shell.exec(
         `'${join(__dirname, './defaultAppExist.sh')}' "${protocol}://test"`,
@@ -27,17 +31,6 @@ const getDefaultApp = async (protocol) => {
         throw new Error(res.stderr);
     }
     return res.stdout.trim() !== 'pr-result=false' ? res.stdout.trim() : null;
-};
-
-/**
- * Checks if the given protocol already exist on not
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @returns {Promise}
- */
-const checkIfExists = async (protocol) => {
-    const defaultApp = await getDefaultApp(protocol);
-
-    return defaultApp !== null;
 };
 
 /**
@@ -51,20 +44,11 @@ const checkIfExists = async (protocol) => {
  * @returns {Promise}
  */
 const register = async (options) => {
-    const { protocol, override, terminal } = options;
-    let { command } = options;
+    const { protocol, command, terminal } = options;
     let tempDir = null;
 
     try {
-        const exist = await checkIfExists(protocol);
-
-        if (exist) {
-            if (!override) throw new Error('Protocol already exists');
-        }
-
         tempDir = constants.tmpdir(protocol);
-
-        command = await preProcessCommands(protocol, command);
 
         const plistMutator = join(__dirname, 'plistMutator.js');
 
@@ -148,12 +132,10 @@ const register = async (options) => {
  * @param {object?} [options={}] - the options
  * @param {string=} options.protocol - Protocol on which is required to be checked.
  * @param {boolean=} options.force - This will delete the app even if it is not created by this module
+ * @param {string=} options.defaultApp - This is the default app for this protocol
  * @returns {Promise}
  */
-const deRegister = async ({ protocol, force }) => {
-    const defaultApp = await getDefaultApp(protocol);
-    if (!defaultApp) return;
-
+const deRegister = async ({ protocol, force, defaultApp }) => {
     const internalProtocolDir = join(homedir, protocol);
     const plistFile = join(defaultApp, './Contents/Info.plist');
     const appPlist = plist.parse(fs.readFileSync(plistFile).toString());
@@ -182,18 +164,14 @@ const deRegister = async ({ protocol, force }) => {
         }
     }
 
-    try {
-        // Remove the internal app and script if it is created by this module
-        if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
-            fs.rmSync(internalProtocolDir, { recursive: true, force: true });
-        }
-    } catch (e) {
-        console.debug('Ignored Error for deleting intermittent files: ', e);
+    // Remove the internal app and script if it is created by this module
+    if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
     }
 };
 
 module.exports = {
-    checkIfExists,
+    getDefaultApp,
     register,
     deRegister
 };

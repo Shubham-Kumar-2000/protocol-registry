@@ -11,6 +11,11 @@ const {
     fileContainsExactLine
 } = require('../utils/fileUtil');
 
+/**
+ * Fetches the default app for the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
 const getDefaultApp = async (protocol) => {
     const res = await shell.exec(
         `xdg-mime query default x-scheme-handler/${protocol}`,
@@ -40,17 +45,6 @@ const getDefaultApp = async (protocol) => {
 };
 
 /**
- * Checks if the given protocol already exist on not
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @returns {Promise}
- */
-const checkIfExists = async (protocol) => {
-    const defaultApp = await getDefaultApp(protocol);
-
-    return defaultApp !== null;
-};
-
-/**
  * Registers the given protocol with the given command.
  * @param {object} options - the options
  * @param {string=} options.protocol - Protocol on which it the given command should be called.
@@ -61,17 +55,10 @@ const checkIfExists = async (protocol) => {
  * @returns {Promise}
  */
 const register = async (options) => {
-    const { protocol, override, terminal, appName } = options;
-    let { command } = options;
+    const { protocol, command, terminal, appName } = options;
 
     let tempDir = null;
     try {
-        const exist = await checkIfExists(protocol);
-
-        if (exist) {
-            if (!override) throw new Error('Protocol already exists');
-        }
-
         tempDir = constants.tmpdir(protocol);
 
         const desktopFileName = `${appName.replaceAll(
@@ -82,8 +69,6 @@ const register = async (options) => {
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');
-
-        command = await preProcessCommands(protocol, command);
 
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
@@ -129,14 +114,10 @@ const register = async (options) => {
  * @param {object?} [options={}] - the options
  * @param {string=} options.protocol - Protocol on which is required to be checked.
  * @param {boolean=} options.force - This will delete the app even if it is not created by this module
+ * @param {string=} options.defaultApp - This is the default app for this protocol
  * @returns {Promise}
  */
-const deRegister = async ({ protocol, force }) => {
-    const defaultApp = await getDefaultApp(protocol);
-
-    if (!defaultApp) {
-        return;
-    }
+const deRegister = async ({ protocol, force, defaultApp }) => {
     const configPaths = [
         join(constants.osHomeDir, '.config', 'mimeapps.list'),
         join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
@@ -188,18 +169,14 @@ const deRegister = async ({ protocol, force }) => {
 
     const internalProtocolDir = join(constants.homedir, protocol);
 
-    try {
-        // Remove the internal app and script if it is created by this module
-        if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
-            fs.rmSync(internalProtocolDir, { recursive: true, force: true });
-        }
-    } catch (e) {
-        console.debug('Ignored Error for deleting intermittent files: ', e);
+    // Remove the internal app and script if it is created by this module
+    if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
     }
 };
 
 module.exports = {
-    checkIfExists,
+    getDefaultApp,
     register,
     deRegister
 };

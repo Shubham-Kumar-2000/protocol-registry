@@ -1,13 +1,11 @@
 const Joi = require('joi');
 
-const protocolSchema = Joi.string()
+exports.protocolSchema = Joi.string()
     .regex(/^[a-zA-Z]+$/)
     .required();
 
-exports.checkIfExistsSchema = protocolSchema;
-
 exports.registerSchema = Joi.object({
-    protocol: protocolSchema,
+    protocol: this.protocolSchema,
     command: Joi.string().required(),
     override: Joi.boolean().default(false),
     terminal: Joi.boolean().default(false),
@@ -17,6 +15,6 @@ exports.registerSchema = Joi.object({
 });
 
 exports.deRegisterSchema = Joi.object({
-    protocol: protocolSchema,
+    protocol: this.protocolSchema,
     force: Joi.boolean()
 });

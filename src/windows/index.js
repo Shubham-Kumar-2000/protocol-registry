@@ -1,10 +1,9 @@
 const Registry = require('winreg');
 const fs = require('fs');
-const { preProcessCommands } = require('../utils/processCommand');
 
 const { join } = require('path');
 const { homedir } = require('../config/constants');
-const { setRegistry } = require('./registry');
+const { setRegistry, processRegistryPath } = require('./registry');
 
 const getRegistry = (protocol) => {
     const keyPath = '\\Software\\Classes\\' + protocol;
@@ -38,6 +37,24 @@ const checkIfExists = (protocol) => {
 };
 
 /**
+ * Fetches the default app for the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
+const getDefaultApp = (protocol) => {
+    const { registry } = getRegistry(protocol);
+    return new Promise((resolve, reject) => {
+        registry.keyExists((err, exist) => {
+            if (err) return reject(err);
+            if (exist) {
+                resolve(processRegistryPath(registry.path));
+            }
+            resolve(null);
+        });
+    });
+};
+
+/**
  * Registers the given protocol with the given command.
  * @param {object} options - the options
  * @param {string=} options.protocol - Protocol on which it the given command should be called.
@@ -48,8 +65,7 @@ const checkIfExists = (protocol) => {
  * @param {function (err)} cb - callback function Optional
  */
 const register = async (options) => {
-    const { protocol, override, terminal } = options;
-    let { command } = options;
+    const { protocol, command, terminal } = options;
 
     // HKEY_CLASSES_ROOT
     //    $PROTOCOL
@@ -66,18 +82,6 @@ const register = async (options) => {
     // anyway, and can be written by unprivileged users.
 
     const { registry, commandRegistry } = getRegistry(protocol);
-    const exist = await checkIfExists(protocol);
-
-    if (exist) {
-        if (!override) throw new Error('Protocol already exists');
-        await new Promise((resolve, reject) =>
-            registry.destroy((err) => {
-                if (err) return reject(err);
-                return resolve(true);
-            })
-        );
-    }
-    command = await preProcessCommands(protocol, command);
 
     await new Promise((resolve, reject) =>
         registry.create((err) => {
@@ -108,7 +112,6 @@ const register = async (options) => {
  * Removes the registration of the given protocol
  * @param {object?} [options={}] - the options
  * @param {string=} options.protocol - Protocol on which is required to be checked.
- * @param {boolean=} options.force - This will delete the app even if it is not created by this module
  * @returns {Promise}
  */
 const deRegister = async ({ protocol }) => {
@@ -116,21 +119,21 @@ const deRegister = async ({ protocol }) => {
     const exists = await checkIfExists(protocol);
     if (!exists) return;
 
-    const internalProtocolDir = join(homedir, protocol);
-    if (fs.existsSync(internalProtocolDir)) {
-        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
-    }
-
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
         registry.destroy((err) => {
             if (err) return reject(err);
             return resolve();
         });
     });
+
+    const internalProtocolDir = join(homedir, protocol);
+    if (fs.existsSync(internalProtocolDir)) {
+        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
+    }
 };
 
 module.exports = {
-    checkIfExists,
+    getDefaultApp,
     register,
     deRegister
 };

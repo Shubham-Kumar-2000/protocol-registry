@@ -9,10 +9,11 @@ const macos = require('./macos');
 const windows = require('./windows');
 const {
     registryValidator,
-    checkIfExistsValidator,
+    protocolValidator,
     deRegistryValidator
 } = require('./utils/validator');
 const { checkIfFolderExists } = require('./utils/fileUtil');
+const { preProcessCommands } = require('./utils/processCommand');
 const { homedir } = constants;
 
 const getPlatform = () => {
@@ -46,6 +47,23 @@ const register = async (protocol, command, options = {}) => {
         validatedOptions.appName = `url-${validatedOptions.protocol}`;
     }
 
+    const defaultApp = await platform.getDefaultApp(validatedOptions.protocol);
+
+    if (defaultApp) {
+        if (!validatedOptions.override)
+            throw new Error('Protocol already exists');
+        await platform.deRegister({
+            protocol: validatedOptions.protocol,
+            force: false,
+            defaultApp
+        });
+    }
+
+    validatedOptions.command = await preProcessCommands(
+        validatedOptions.protocol,
+        validatedOptions.command
+    );
+
     return platform.register(validatedOptions);
 };
 
@@ -54,8 +72,17 @@ const register = async (protocol, command, options = {}) => {
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkIfExists = (protocol) => {
-    return platform.checkIfExists(checkIfExistsValidator(protocol));
+const checkIfExists = async (protocol) => {
+    return (await platform.getDefaultApp(protocolValidator(protocol))) !== null;
+};
+
+/**
+ * Fetches the default app for the given protocol
+ * @param {string=} protocol - Protocol on which is required to be checked.
+ * @returns {Promise}
+ */
+const getDefaultApp = async (protocol) => {
+    return platform.getDefaultApp(protocolValidator(protocol));
 };
 
 /**
@@ -67,6 +94,11 @@ const checkIfExists = (protocol) => {
  */
 const deRegister = async (protocol, options = {}) => {
     const validatedOptions = deRegistryValidator(protocol, options);
+
+    const defaultApp = await platform.getDefaultApp(validatedOptions.protocol);
+    validatedOptions.defaultApp = defaultApp;
+
+    if (!defaultApp) return;
 
     await platform.deRegister(validatedOptions);
 
@@ -88,5 +120,6 @@ const deRegister = async (protocol, options = {}) => {
 module.exports = {
     register,
     checkIfExists,
+    getDefaultApp,
     deRegister
 };

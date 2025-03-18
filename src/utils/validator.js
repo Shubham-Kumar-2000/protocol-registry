@@ -1,7 +1,7 @@
 const {
     registerSchema,
     deRegisterSchema,
-    checkIfExistsSchema
+    protocolSchema
 } = require('../validation/common');
 
 const validator = (schema, data) => {
@@ -29,12 +29,12 @@ const deRegistryValidator = (protocol, options) => {
     return validator(deRegisterSchema, options);
 };
 
-const checkIfExistsValidator = (protocol) => {
-    return validator(checkIfExistsSchema, protocol);
+const protocolValidator = (protocol) => {
+    return validator(protocolSchema, protocol);
 };
 
 module.exports = {
     registryValidator,
     deRegistryValidator,
-    checkIfExistsValidator
+    protocolValidator
 };

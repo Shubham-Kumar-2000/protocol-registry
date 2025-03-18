@@ -5,6 +5,7 @@ const { homedir } = require('../src/config/constants');
 const fs = require('fs');
 
 const ProtocolRegistry = require('../src');
+const constants = require('../src/config/constants');
 
 const newProtocol = () =>
     'testproto' +
@@ -17,12 +18,18 @@ const newProtocol = () =>
 
 let protocol = newProtocol();
 
+const sleepBeforeDeRegisterInMacOS = async () => {
+    if (process.platform === constants.platforms.macos) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+};
+
 beforeEach(async () => {
     protocol = newProtocol();
-    if (!fs.existsSync(homedir)) fs.mkdirSync(homedir);
 });
 
 afterEach(async () => {
+    await sleepBeforeDeRegisterInMacOS();
     await ProtocolRegistry.deRegister(protocol, { force: true });
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
@@ -58,6 +65,8 @@ test('Check if deRegister should remove the protocol', async () => {
         }
     );
 
+    await sleepBeforeDeRegisterInMacOS();
+
     await ProtocolRegistry.deRegister(protocol);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
@@ -73,6 +82,8 @@ test('Check if deRegister should delete the apps if registered through this modu
             appName: 'App Name'
         }
     );
+
+    await sleepBeforeDeRegisterInMacOS();
 
     await ProtocolRegistry.deRegister(protocol);
 
@@ -100,6 +111,8 @@ test('Check if deRegister should not delete the homedir if other registered apps
         }
     );
 
+    await sleepBeforeDeRegisterInMacOS();
+
     await ProtocolRegistry.deRegister(protocol + 'del');
 
     expect(fs.existsSync(homedir)).toBeTruthy();
@@ -115,6 +128,8 @@ test('Check if app should be registered again post the same app is deRegistered'
             appName: 'my-custom-app-name'
         }
     );
+
+    await sleepBeforeDeRegisterInMacOS();
 
     await ProtocolRegistry.deRegister(protocol);
 

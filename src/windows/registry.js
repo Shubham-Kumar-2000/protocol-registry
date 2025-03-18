@@ -39,6 +39,10 @@ function trimQuotesIfPresent(value) {
     return value;
 }
 
+exports.processRegistryPath = (registryPath) => {
+    return trimQuotesIfPresent(registryPath);
+};
+
 exports.setRegistry = (registry, options) => {
     return new Promise((resolve, reject) => {
         const { name, type, value } = options;

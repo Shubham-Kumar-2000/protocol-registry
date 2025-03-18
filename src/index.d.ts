@@ -28,5 +28,6 @@ declare namespace ProtocolRegistry {
   export function register(protocol: string, command: string, params: RegisterOptions): Promise<void>;
 
   export function checkIfExists(protocol: string): Promise<boolean>;
+  export function getDefaultApp(protocol: string): Promise<string?>;
   export function deRegister(protocol: string, options: DeRegisterOptions?): Promise<void>;
 }
