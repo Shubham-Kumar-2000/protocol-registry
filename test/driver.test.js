@@ -103,7 +103,6 @@ test('Check if exist should be false if protocol is not registered', async () =>
 });
 
 test('Check if exist should be true if protocol is registered', async () => {
-    console.log(process.env.XDG_DATA_DIRS);
     const options = {
         override: true,
         terminal: false,

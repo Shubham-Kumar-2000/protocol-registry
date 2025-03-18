@@ -27,6 +27,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: mkdir -p ~/.local/share/applications
+    - run: export XDG_DATA_DIRS="$HOME/.local/share/applications:$XDG_DATA_DIRS"
     - run: npm i
     - run: npm run build --if-present
     - run: npm run check
