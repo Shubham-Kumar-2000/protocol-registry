@@ -3,7 +3,6 @@ const { expect, afterAll, beforeEach, afterEach } = require('@jest/globals');
 const randomString = require('randomstring');
 const shell = require('../../src/utils/shell');
 const constants = require('../config/constants');
-const linux = require('../../src/linux');
 
 let wsServer = null;
 
@@ -65,9 +64,7 @@ const getOpenCommand = async (protocol, url) => {
         return `start "${protocol}" "${url}"`;
     if (process.platform === constants.platforms.macos) return `open '${url}'`;
     if (process.platform === constants.platforms.linux) {
-        return `~/.local/share/applications/${await linux.getDefaultApp(
-            protocol
-        )} '${url}'`;
+        return `gio open '${url}'`;
     }
     throw new Error('Unknown platform');
 };
