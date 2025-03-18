@@ -30,7 +30,7 @@ jobs:
         cache: 'npm'
     - run: sudo apt-get update
     - run: sudo apt clean
-    - run: sudo apt-get install -y glib-utils
+    - run: sudo apt-get install -y libglib2.0-dev
     - run: gio --version
     - run: mkdir -p ~/.local/share/applications
     - run: npm i
