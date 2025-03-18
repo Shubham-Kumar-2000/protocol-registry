@@ -2,8 +2,6 @@ const Registry = require('winreg');
 const fs = require('fs');
 const { preProcessCommands } = require('../utils/processCommand');
 
-const validator = require('../utils/validator');
-const { registerSchema, deRegisterSchema } = require('../validation/common');
 const { join } = require('path');
 const { homedir } = require('../config/constants');
 const { setRegistry } = require('./registry');
@@ -25,11 +23,11 @@ const getRegistry = (protocol) => {
 };
 
 /**
- * Checks if the given protocal already exist on not
+ * Checks if the given protocol already exist on not
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = (protocol) => {
+const checkIfExists = (protocol) => {
     const { registry } = getRegistry(protocol);
     return new Promise((resolve, reject) => {
         registry.keyExists((err, exist) => {
@@ -46,18 +44,13 @@ const checkifExists = (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
- * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
- * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
+ * @param {string=} options.appName - Name of the app by default it will be `url-${protocol}`
  * @param {function (err)} cb - callback function Optional
  */
+const register = async (options) => {
+    const { protocol, override, terminal } = options;
+    let { command } = options;
 
-const register = async (options, cb) => {
-    let res = null;
-    const validOptions = validator(registerSchema, options);
-    const { protocol, override, terminal } = validOptions;
-    let { command } = validOptions;
-    if (cb && typeof cb !== 'function')
-        throw new Error('Callback is not function');
     // HKEY_CLASSES_ROOT
     //    $PROTOCOL
     //       (Default) = "URL:$NAME"
@@ -71,69 +64,56 @@ const register = async (options, cb) => {
     // Administrator user. So, we instead write to "HKEY_CURRENT_USER\
     // Software\Classes", which is inherited by "HKEY_CLASSES_ROOT"
     // anyway, and can be written by unprivileged users.
-    try {
-        const { registry, commandRegistry } = getRegistry(protocol);
-        const exist = await checkifExists(protocol);
 
-        if (exist) {
-            if (!override) throw new Error('Protocol already exists');
-            await new Promise((resolve, reject) =>
-                registry.destroy((err) => {
-                    if (err) return reject(err);
-                    return resolve(true);
-                })
-            );
-        }
-        command = await preProcessCommands(
-            protocol,
-            command,
-            true,
-            options.scriptName
-        );
+    const { registry, commandRegistry } = getRegistry(protocol);
+    const exist = await checkIfExists(protocol);
 
+    if (exist) {
+        if (!override) throw new Error('Protocol already exists');
         await new Promise((resolve, reject) =>
-            registry.create((err) => {
+            registry.destroy((err) => {
                 if (err) return reject(err);
                 return resolve(true);
             })
         );
-
-        const urlDecl = 'URL:' + protocol;
-
-        await setRegistry(registry, {
-            name: 'URL Protocol',
-            type: Registry.REG_SZ,
-            value: Registry.DEFAULT_VALUE
-        });
-        await setRegistry(registry, {
-            name: Registry.DEFAULT_VALUE,
-            type: Registry.REG_SZ,
-            value: urlDecl
-        });
-
-        await setRegistry(commandRegistry, {
-            name: Registry.DEFAULT_VALUE,
-            type: Registry.REG_SZ,
-            value: terminal ? `cmd /k "${command}"` : command
-        });
-    } catch (e) {
-        if (!cb) throw e;
-        res = e;
     }
-    if (cb) return cb(res);
+    command = await preProcessCommands(protocol, command);
+
+    await new Promise((resolve, reject) =>
+        registry.create((err) => {
+            if (err) return reject(err);
+            return resolve(true);
+        })
+    );
+
+    await setRegistry(registry, {
+        name: 'URL Protocol',
+        type: Registry.REG_SZ,
+        value: Registry.DEFAULT_VALUE
+    });
+    await setRegistry(registry, {
+        name: Registry.DEFAULT_VALUE,
+        type: Registry.REG_SZ,
+        value: options.appName
+    });
+
+    await setRegistry(commandRegistry, {
+        name: Registry.DEFAULT_VALUE,
+        type: Registry.REG_SZ,
+        value: terminal ? `cmd /k "${command}"` : command
+    });
 };
 
 /**
  * Removes the registration of the given protocol
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @param {object} [options={}] - the options
- * @param {boolean=} options.force - This option has no effect in windows
+ * @param {object?} [options={}] - the options
+ * @param {string=} options.protocol - Protocol on which is required to be checked.
+ * @param {boolean=} options.force - This will delete the app even if it is not created by this module
  * @returns {Promise}
  */
-const deRegister = async (protocol, options = {}) => {
-    validator(deRegisterSchema, options);
+const deRegister = async ({ protocol }) => {
     const { registry } = getRegistry(protocol);
-    const exists = await checkifExists(protocol);
+    const exists = await checkIfExists(protocol);
     if (!exists) return;
 
     const internalProtocolDir = join(homedir, protocol);
@@ -150,7 +130,7 @@ const deRegister = async (protocol, options = {}) => {
 };
 
 module.exports = {
-    checkifExists,
+    checkIfExists,
     register,
     deRegister
 };
