@@ -8,6 +8,8 @@ const shell = require('../src/utils/shell');
 const ProtocolRegistry = require('../src');
 const constants = require('../src/config/constants');
 
+const messenger = require('messenger');
+
 const newProtocol = () =>
     'testproto' +
     randomString
@@ -25,17 +27,14 @@ const sleep = async () => {
     }
 };
 
-const getCommand = (protocol) => {
+const getCommand = () => {
     if (process.platform === constants.platforms.windows) {
         return `node "${path.join(
             __dirname,
             './test runner.js'
-        )}" "$_URL_" ${protocol}.txt`;
+        )}" "$_URL_" 8000`;
     }
-    return `node '${path.join(
-        __dirname,
-        './test runner.js'
-    )}' "$_URL_" ${protocol}.txt`;
+    return `node '${path.join(__dirname, './test runner.js')}' "$_URL_" 8000`;
 };
 
 const openProtocol = async (protocol) => {
@@ -46,17 +45,23 @@ const openProtocol = async (protocol) => {
     const command =
         process.platform === constants.platforms.windows
             ? `start "${protocol}" "${url}"`
-            : `open -W '${url}'`;
+            : `open '${url}'`;
     const result = await shell.exec(command);
     if (result.code != 0 || result.stderr) throw new Error(result.stderr);
     return url;
 };
 
 const checkRegistration = async (protocol, options) => {
+    const server = messenger.createListener(8000);
+
+    const childProcessData = new Promise((resolve) => {
+        server.on('message', function (message, data) {
+            message.reply('Thanks');
+            resolve(data);
+        });
+    });
     const url = await openProtocol(protocol);
-    const childProcessData = JSON.parse(
-        fs.readFileSync(path.join(__dirname, '../temp', `${protocol}.txt`))
-    );
+    await childProcessData;
     expect(childProcessData.terminal).toBe(options.terminal || false);
     expect(childProcessData.args.includes(url)).toBeTruthy();
 };
@@ -83,7 +88,7 @@ test('Check if exist should be true if protocol is registered', async () => {
         terminal: false,
         appName: 'my-custom-app-name'
     };
-    await ProtocolRegistry.register(protocol, getCommand(protocol), options);
+    await ProtocolRegistry.register(protocol, getCommand(), options);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
     await checkRegistration(protocol, options);
