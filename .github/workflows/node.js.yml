@@ -18,7 +18,9 @@ jobs:
       matrix:
         node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    env:
+      XDG_DATA_DIRS: "$HOME/.local/share:$XDG_DATA_DIRS"
+    
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -27,7 +29,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: mkdir -p ~/.local/share/applications
-    - run: export XDG_DATA_DIRS="$HOME/.local/share/applications:$XDG_DATA_DIRS"
+    - run: export XDG_DATA_DIRS="$HOME/.local/share:$XDG_DATA_DIRS"
     - run: npm i
     - run: npm run build --if-present
     - run: npm run check
