@@ -33,7 +33,7 @@ jobs:
     - run: export XDG_DATA_DIRS="$HOME/.local/share:$XDG_DATA_DIRS"
     - run: npm i
     - run: npm run build --if-present
-    - run: export XDG_DATA_DIRS="$HOME/.local/share:/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop" ; npm run check
+    - run: export XDG_DATA_DIRS="$HOME/.local/share" ; npm run check
   windows:
 
     runs-on: windows-latest
