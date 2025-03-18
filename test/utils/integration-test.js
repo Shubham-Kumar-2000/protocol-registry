@@ -59,7 +59,7 @@ const checkDeRegistration = async (protocol) => {
     await expect(openProtocol(protocol)).rejects.toThrow();
 };
 
-const getOpenCommand = async (protocol, url) => {
+const getOpenCommand = (protocol, url) => {
     if (process.platform === constants.platforms.windows)
         return `start "${protocol}" "${url}"`;
     if (process.platform === constants.platforms.macos) return `open '${url}'`;
@@ -74,14 +74,11 @@ const openProtocol = async (protocol) => {
         charset: 'alphabetic'
     })}/`;
 
-    const command = await getOpenCommand(protocol, url);
+    const command = getOpenCommand(protocol, url);
 
     const result = await shell.exec(command);
-    if (result.code != 0 || result.stderr) {
-        console.error(result.stdout);
-        console.error(result.stderr);
-        throw new Error(result.stderr);
-    }
+    if (result.code != 0 || result.stderr) throw new Error(result.stderr);
+
     return url;
 };
 
