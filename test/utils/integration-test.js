@@ -3,6 +3,7 @@ const { expect, afterAll, beforeEach, afterEach } = require('@jest/globals');
 const randomString = require('randomstring');
 const shell = require('../../src/utils/shell');
 const constants = require('../config/constants');
+const linux = require('../../src/linux');
 
 let wsServer = null;
 
@@ -59,18 +60,24 @@ const checkDeRegistration = async (protocol) => {
     await expect(openProtocol(protocol)).rejects.toThrow();
 };
 
+const getOpenCommand = (protocol, url) => {
+    if (process.platform === constants.platforms.windows)
+        return `start "${protocol}" "${url}"`;
+    if (process.platform === constants.platforms.macos) return `open '${url}'`;
+    if (process.platform === constants.platforms.linux) {
+        return `~/.local/share/applications/${linux.getDefaultApp(
+            protocol
+        )} '${url}'`;
+    }
+    throw new Error('Unknown platform');
+};
+
 const openProtocol = async (protocol) => {
     const url = `${protocol}://${randomString.generate({
         charset: 'alphabetic'
     })}/`;
 
-    let command =
-        process.platform === constants.platforms.windows
-            ? `start "${protocol}" "${url}"`
-            : `open '${url}'`;
-    if (process.platform === constants.platforms.linux) {
-        command = `gnome-open '${url}'`;
-    }
+    const command = getOpenCommand(protocol, url);
 
     const result = await shell.exec(command);
     if (result.code != 0 || result.stderr) {
