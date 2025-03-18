@@ -3,46 +3,11 @@ const { expect, afterAll, beforeEach, afterEach } = require('@jest/globals');
 const randomString = require('randomstring');
 const shell = require('../../src/utils/shell');
 const constants = require('../config/constants');
-const { join } = require('path');
 
 let wsServer = null;
 
 const sleep = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-};
-
-const grantPermissions = async (protocol, options) => {
-    if (
-        process.platform !== constants.platforms.macos ||
-        options.terminal !== true
-    )
-        return;
-
-    const identifier = await shell.exec(
-        `osascript -e 'id of app "${join(
-            constants.homedir,
-            protocol,
-            'APP-' + protocol + '.app'
-        )}"'`,
-        {
-            silent: true
-        }
-    );
-    if (identifier.code != 0 || identifier.stderr)
-        throw new Error(identifier.stderr);
-
-    console.log(
-        identifier.stdout.trim(),
-        'sudo tccutil --insert Accessibility ' + identifier.stdout.trim()
-    );
-
-    const result = await shell.exec(
-        'sudo tccutil --insert Accessibility ' + identifier.stdout.trim(),
-        {
-            silent: true
-        }
-    );
-    if (result.code != 0 || result.stderr) throw new Error(result.stderr);
 };
 
 const createServer = () => {
@@ -65,6 +30,13 @@ afterAll(destroyServer);
 
 const checkRegistration = async (protocol, options) => {
     if (!constants.checkIntegration) return;
+    if (
+        process.platform === constants.platforms.macos &&
+        options.terminal &&
+        constants.inCiCd
+    ) {
+        return; // checking of terminal true in macos ci cd is not possible
+    }
 
     const promise = new Promise((resolve) => {
         wsServer.on('connection', (ws) => {
@@ -75,7 +47,6 @@ const checkRegistration = async (protocol, options) => {
         });
     });
     await sleep();
-    await grantPermissions(protocol, options);
     const url = await openProtocol(protocol);
     const childProcessData = await promise;
     expect(childProcessData.terminal).toBe(options.terminal || false);
