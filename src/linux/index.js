@@ -32,7 +32,7 @@ const getDefaultApp = async (protocol) => {
         return null;
     }
 
-    if (res.code !== 0 || res.stderr) {
+    if (res.code !== 0) {
         throw new Error(res.stderr);
     }
 
