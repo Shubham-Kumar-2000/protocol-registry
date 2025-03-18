@@ -1,6 +1,6 @@
 // const fs = require('fs');
 // const { join } = require('path');
-const messenger = require('messenger');
+const WebSocket = require('ws');
 
 console.log('Initiated....');
 console.log('With arguments :');
@@ -18,16 +18,24 @@ console.log(process.argv);
 //     )
 // );
 
-const client = messenger.createSpeaker(process.argv[process.argv.length - 1]);
-client.request(
-    'message',
-    {
-        terminal: process.stdout.isTTY || process.stdin.isTTY || false,
-        args: process.argv
-    },
-    function (data) {
-        console.log(data);
-        // eslint-disable-next-line no-process-exit
-        process.exit();
-    }
+const client = new WebSocket(
+    `ws://localhost:${process.argv[process.argv.length - 1]}`
 );
+
+client.on('open', async () => {
+    console.log('WebSocket client connected');
+
+    client.send(
+        JSON.stringify({
+            terminal: process.stdout.isTTY || process.stdin.isTTY || false,
+            args: process.argv
+        })
+    );
+});
+
+client.on('message', (msg) => {
+    console.log(msg);
+    client.close();
+    // eslint-disable-next-line no-process-exit
+    process.exit();
+});

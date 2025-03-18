@@ -14,7 +14,9 @@ const shell = require('../src/utils/shell');
 const ProtocolRegistry = require('../src');
 const constants = require('../src/config/constants');
 
-const messenger = require('messenger');
+const WebSocket = require('ws');
+
+let wsServer = null;
 
 const newProtocol = () =>
     'testproto' +
@@ -58,12 +60,14 @@ const openProtocol = async (protocol) => {
 };
 
 const checkRegistration = async (protocol, options) => {
-    const server = messenger.createListener(8000);
+    wsServer = new WebSocket.Server({ port: 8000 });
 
     const childProcessData = new Promise((resolve) => {
-        server.on('message', function (message, data) {
-            message.reply('Thanks');
-            resolve(data);
+        wsServer.on('connection', (ws) => {
+            ws.on('message', (message) => {
+                ws.send('Thanks');
+                resolve(JSON.parse(message));
+            });
         });
     });
     const url = await openProtocol(protocol);
@@ -82,11 +86,16 @@ afterEach(async () => {
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
     }
+    if (wsServer) {
+        wsServer.close();
+    }
 });
 
 afterAll(async () => {
     // eslint-disable-next-line no-process-exit
-    process.exit();
+    if (wsServer) {
+        wsServer.close();
+    }
 });
 
 test('Check if exist should be false if protocol is not registered', async () => {
