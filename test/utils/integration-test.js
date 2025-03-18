@@ -64,10 +64,14 @@ const openProtocol = async (protocol) => {
         charset: 'alphabetic'
     })}/`;
 
-    const command =
+    let command =
         process.platform === constants.platforms.windows
             ? `start "${protocol}" "${url}"`
             : `open '${url}'`;
+    if (process.platform === constants.platforms.linux) {
+        command = `sh -x xdg-open '${url}'`;
+    }
+
     const result = await shell.exec(command);
     if (result.code != 0 || result.stderr) {
         console.error(result.stdout);
