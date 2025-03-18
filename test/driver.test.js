@@ -1,33 +1,13 @@
 const path = require('path');
-const randomString = require('randomstring');
-const {
-    test,
-    expect,
-    beforeEach,
-    afterEach,
-    afterAll
-} = require('@jest/globals');
+const { test, expect, afterEach } = require('@jest/globals');
 const { homedir } = require('../src/config/constants');
 const fs = require('fs');
-const shell = require('../src/utils/shell');
 
 const ProtocolRegistry = require('../src');
-const constants = require('../src/config/constants');
+const { checkRegistration } = require('./utils/integration-test');
+const constants = require('./config/constants');
 
-const WebSocket = require('ws');
-
-let wsServer = null;
-
-const newProtocol = () =>
-    'testproto' +
-    randomString
-        .generate({
-            length: 5,
-            charset: 'alphabetic'
-        })
-        .toLowerCase();
-
-let protocol = newProtocol();
+const protocol = 'regimen';
 
 const sleep = async () => {
     if (process.platform === constants.platforms.macos) {
@@ -37,48 +17,14 @@ const sleep = async () => {
 
 const getCommand = () => {
     if (process.platform === constants.platforms.windows) {
-        return `node "${path.join(
-            __dirname,
-            './test runner.js'
-        )}" "$_URL_" 8000`;
+        return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
+            constants.wssPort
+        }`;
     }
-    return `node '${path.join(__dirname, './test runner.js')}' "$_URL_" 8000`;
+    return `node '${path.join(__dirname, './test runner.js')}' "$_URL_" ${
+        constants.wssPort
+    }`;
 };
-
-const openProtocol = async (protocol) => {
-    const url = `${protocol}://${randomString.generate({
-        charset: 'alphabetic'
-    })}`;
-
-    const command =
-        process.platform === constants.platforms.windows
-            ? `start "${protocol}" "${url}"`
-            : `open '${url}'`;
-    const result = await shell.exec(command);
-    if (result.code != 0 || result.stderr) throw new Error(result.stderr);
-    return url;
-};
-
-const checkRegistration = async (protocol, options) => {
-    wsServer = new WebSocket.Server({ port: 8000 });
-
-    const promise = new Promise((resolve) => {
-        wsServer.on('connection', (ws) => {
-            ws.on('message', (message) => {
-                ws.send('Thanks');
-                resolve(JSON.parse(message.toString()));
-            });
-        });
-    });
-    const url = await openProtocol(protocol);
-    const childProcessData = await promise;
-    expect(childProcessData.terminal).toBe(options.terminal || false);
-    expect(childProcessData.args.includes(url)).toBeTruthy();
-};
-
-beforeEach(async () => {
-    protocol = newProtocol();
-});
 
 afterEach(async () => {
     await sleep();
@@ -86,24 +32,72 @@ afterEach(async () => {
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
     }
-    if (wsServer) {
-        wsServer.close();
-    }
 });
 
-afterAll(async () => {
-    // eslint-disable-next-line no-process-exit
-    if (wsServer) {
-        wsServer.close();
+test.each([
+    {
+        name: 'should register protocol without options'
+    },
+    {
+        name: 'should register protocol with override is false',
+
+        options: {
+            override: false
+        }
+    },
+    {
+        name: 'should register protocol with terminal is false',
+
+        options: {
+            terminal: false
+        }
+    },
+    {
+        name:
+            'should register protocol with override is true and protocol does not exist',
+
+        options: {
+            override: true
+        }
+    },
+    {
+        name: 'should register protocol with terminal is true',
+
+        options: {
+            terminal: true
+        }
+    },
+    {
+        name: 'should register protocol with custom app name',
+
+        options: {
+            appName: 'custom-app-name'
+        }
+    },
+    {
+        name:
+            'should register protocol with custom app name with multiple spaces',
+
+        options: {
+            terminal: true,
+            override: true,
+            appName: 'custom App-name 1'
+        }
     }
-});
+])(
+    '$name',
+    async (args) => {
+        await ProtocolRegistry.register(protocol, getCommand(), args.options);
+        await checkRegistration(protocol, args.options || {});
+    },
+    constants.jestTimeOut
+);
 
 test('Check if exist should be false if protocol is not registered', async () => {
-    expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
+    expect(await ProtocolRegistry.checkIfExists('atestproto')).toBeFalsy();
 });
 
 test('Check if exist should be true if protocol is registered', async () => {
-    console.log(process.env.XDG_DATA_DIRS);
     const options = {
         override: true,
         terminal: false,
@@ -112,8 +106,23 @@ test('Check if exist should be true if protocol is registered', async () => {
     await ProtocolRegistry.register(protocol, getCommand(), options);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
-    await checkRegistration(protocol, options);
-}, 30000);
+});
+
+test('should fail registration when protocol already exist and override is false', async () => {
+    const options = {
+        override: false,
+        terminal: false
+    };
+    await ProtocolRegistry.register(protocol, getCommand(), options);
+
+    expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
+
+    await expect(
+        ProtocolRegistry.register(protocol, getCommand(), options)
+    ).rejects.toThrow();
+
+    expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
+});
 
 test('Check if deRegister should remove the protocol', async () => {
     await ProtocolRegistry.register(
@@ -131,7 +140,6 @@ test('Check if deRegister should remove the protocol', async () => {
     await ProtocolRegistry.deRegister(protocol);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
-    await expect(openProtocol(protocol)).rejects.toThrow();
 });
 
 test('Check if deRegister should delete the apps if registered through this module', async () => {

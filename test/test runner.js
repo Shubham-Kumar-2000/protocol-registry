@@ -39,3 +39,9 @@ client.on('message', (msg) => {
     // eslint-disable-next-line no-process-exit
     process.exit();
 });
+
+client.on('error', (err) => {
+    console.log(err);
+    // eslint-disable-next-line no-process-exit
+    process.exit();
+});
