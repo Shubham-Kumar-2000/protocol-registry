@@ -30,7 +30,7 @@ jobs:
         cache: 'npm'
     - run: sudo apt-get update
     - run: sudo apt clean
-    - run: sudo apt-get install -y libglib2.0-dev xvfb xterm
+    - run: sudo apt-get install -y libglib2.0-dev xvfb xterm xfonts-base
     - run: gio --version
     - run: mkdir -p ~/.local/share/applications
     - run: npm i
