@@ -24,6 +24,8 @@ const checkRegistration = async (protocol, options) => {
         const url = await openProtocol(protocol);
         const childProcessData = await promise;
         expect(childProcessData.terminal).toBe(options.terminal || false);
+        if (process.platform === constants.platforms.windows)
+            console.log(childProcessData);
         expect(childProcessData.args.includes(url)).toBeTruthy();
     } finally {
         wsServer.close();
