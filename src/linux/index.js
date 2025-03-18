@@ -3,7 +3,6 @@ const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
 const shell = require('../utils/shell');
-const { preProcessCommands } = require('../utils/processCommand');
 const constants = require('../config/constants');
 const {
     checkAndRemoveProtocolSchema,
