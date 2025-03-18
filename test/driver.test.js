@@ -66,14 +66,12 @@ const checkRegistration = async (protocol, options) => {
         wsServer.on('connection', (ws) => {
             ws.on('message', (message) => {
                 ws.send('Thanks');
-                console.log(message.toString());
                 resolve(JSON.parse(message.toString()));
             });
         });
     });
     const url = await openProtocol(protocol);
     const childProcessData = await promise;
-    console.log(childProcessData);
     expect(childProcessData.terminal).toBe(options.terminal || false);
     expect(childProcessData.args.includes(url)).toBeTruthy();
 };
@@ -105,6 +103,7 @@ test('Check if exist should be false if protocol is not registered', async () =>
 });
 
 test('Check if exist should be true if protocol is registered', async () => {
+    console.log(process.env.XDG_DATA_DIRS);
     const options = {
         override: true,
         terminal: false,
