@@ -62,7 +62,7 @@ const openProtocol = async (protocol) => {
 const checkRegistration = async (protocol, options) => {
     wsServer = new WebSocket.Server({ port: 8000 });
 
-    const childProcessData = new Promise((resolve) => {
+    const promise = new Promise((resolve) => {
         wsServer.on('connection', (ws) => {
             ws.on('message', (message) => {
                 ws.send('Thanks');
@@ -72,7 +72,8 @@ const checkRegistration = async (protocol, options) => {
         });
     });
     const url = await openProtocol(protocol);
-    await childProcessData;
+    const childProcessData = await promise;
+    console.log(childProcessData);
     expect(childProcessData.terminal).toBe(options.terminal || false);
     expect(childProcessData.args.includes(url)).toBeTruthy();
 };
