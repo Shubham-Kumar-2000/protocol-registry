@@ -60,12 +60,12 @@ const checkDeRegistration = async (protocol) => {
     await expect(openProtocol(protocol)).rejects.toThrow();
 };
 
-const getOpenCommand = (protocol, url) => {
+const getOpenCommand = async (protocol, url) => {
     if (process.platform === constants.platforms.windows)
         return `start "${protocol}" "${url}"`;
     if (process.platform === constants.platforms.macos) return `open '${url}'`;
     if (process.platform === constants.platforms.linux) {
-        return `~/.local/share/applications/${linux.getDefaultApp(
+        return `~/.local/share/applications/${await linux.getDefaultApp(
             protocol
         )} '${url}'`;
     }
@@ -77,7 +77,7 @@ const openProtocol = async (protocol) => {
         charset: 'alphabetic'
     })}/`;
 
-    const command = getOpenCommand(protocol, url);
+    const command = await getOpenCommand(protocol, url);
 
     const result = await shell.exec(command);
     if (result.code != 0 || result.stderr) {
