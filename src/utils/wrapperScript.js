@@ -9,39 +9,21 @@ const { homedir } = constants;
 const batchScriptContent = `@echo off
 `;
 
-const subtituteCommand = (command, url) => {
+const substituteCommand = (command, url) => {
     const identifier = '$_URL_';
     return command.split(identifier).join(url);
 };
-const subtituteWindowsCommand = (command) => {
-    let identifier = '"$_URL_"';
-    command = command
-        .split(identifier)
-        .join(
-            `"${
-                constants.urlArgument[constants.platforms.windows + 'InScript']
-            }"`
-        );
-    // eslint-disable-next-line quotes
-    identifier = "'$_URL_'";
-    command = command
-        .split(identifier)
-        .join(
-            `'${
-                constants.urlArgument[constants.platforms.windows + 'InScript']
-            }'`
-        );
-    return subtituteCommand(
-        command,
-        constants.urlArgument[constants.platforms.windows]
-    );
-};
+
 const getWrapperScriptContent = (command) => {
     return new Promise((resolve, reject) => {
         try {
             if (process.platform === constants.platforms.windows) {
                 return resolve(
-                    batchScriptContent + subtituteWindowsCommand(command)
+                    batchScriptContent +
+                        substituteCommand(
+                            command,
+                            constants.urlArgument[constants.platforms.windows]
+                        )
                 );
             }
             ejs.renderFile(
@@ -69,7 +51,7 @@ const saveWrapperScript = (protocol, content) => {
     mkdirSync(join(homedir, `./${protocol}`), { recursive: true });
     const wrapperScriptPath = join(
         homedir,
-        `./${protocol}/${protocol}-internal-script.${
+        `./${protocol}/${protocol}-internal-script.pr.${
             process.platform === constants.platforms.windows ? 'bat' : 'sh'
         }`
     );
