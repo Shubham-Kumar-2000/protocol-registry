@@ -1,5 +1,6 @@
 const Registry = require('winreg');
 const fs = require('fs');
+const ejs = require('ejs');
 
 const { join } = require('path');
 const { homedir } = require('../config/constants');
@@ -65,7 +66,7 @@ const getDefaultApp = (protocol) => {
  * @param {function (err)} cb - callback function Optional
  */
 const register = async (options) => {
-    const { protocol, command, terminal } = options;
+    const { protocol, command, terminal, appName } = options;
 
     // HKEY_CLASSES_ROOT
     //    $PROTOCOL
@@ -80,6 +81,29 @@ const register = async (options) => {
     // Administrator user. So, we instead write to "HKEY_CURRENT_USER\
     // Software\Classes", which is inherited by "HKEY_CLASSES_ROOT"
     // anyway, and can be written by unprivileged users.
+
+    const appBatchFileTemplate = join(
+        __dirname,
+        './templates',
+        'app-script.ejs'
+    );
+    const appBatchFilePath = join(homedir, protocol, `${appName}.bat`);
+
+    const appBatchFileContent = await new Promise((resolve, reject) => {
+        ejs.renderFile(
+            appBatchFileTemplate,
+            {
+                terminal,
+                command,
+                appName
+            },
+            function (err, str) {
+                if (err) return reject(err);
+                resolve(str);
+            }
+        );
+    });
+    fs.writeFileSync(appBatchFilePath, appBatchFileContent);
 
     const { registry, commandRegistry } = getRegistry(protocol);
 
@@ -104,7 +128,7 @@ const register = async (options) => {
     await setRegistry(commandRegistry, {
         name: Registry.DEFAULT_VALUE,
         type: Registry.REG_SZ,
-        value: terminal ? `cmd /k "${command}"` : command
+        value: `"${appBatchFilePath}" "%1"`
     });
 };
 

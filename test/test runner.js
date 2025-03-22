@@ -6,17 +6,17 @@ console.log('Initiated....');
 console.log('With arguments :');
 console.log(process.argv);
 
-// fs.writeFileSync(
-//     join(__dirname, '../temp', process.argv[process.argv.length - 1]),
-//     JSON.stringify(
-//         {
-//             terminal: process.stdout.isTTY || process.stdin.isTTY || false,
-//             args: process.argv
-//         },
-//         null,
-//         4
-//     )
-// );
+const isWindows = process.platform === 'win32';
+
+const isTerminalWindows = () => {
+    if (!isWindows) return false;
+    return process.title.includes('.protocol-registry') || false;
+};
+
+const isTerminalOthers = () => {
+    if (isWindows) return false;
+    return process.stdout.isTTY || process.stdin.isTTY;
+};
 
 const client = new WebSocket(
     `ws://localhost:${process.argv[process.argv.length - 1]}`
@@ -27,7 +27,7 @@ client.on('open', async () => {
 
     client.send(
         JSON.stringify({
-            terminal: process.stdout.isTTY || process.stdin.isTTY || false,
+            terminal: isTerminalWindows() || isTerminalOthers() || false,
             args: process.argv
         })
     );
