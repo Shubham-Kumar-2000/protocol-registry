@@ -1,12 +1,16 @@
 const constants = require('../config/constants');
-const ejs = require('ejs');
 const { join } = require('path');
 const { writeFileSync, existsSync, rmSync, mkdirSync } = require('fs');
 const shell = require('./shell');
+const isWsl = require('is-wsl');
 
 const { homedir } = constants;
 
 const batchScriptContent = `@echo off
+`;
+
+const bashScriptContent = `#!/usr/bin/env bash
+_URL_=$1
 `;
 
 const substituteCommand = (command, url) => {
@@ -15,30 +19,16 @@ const substituteCommand = (command, url) => {
 };
 
 const getWrapperScriptContent = (command) => {
-    return new Promise((resolve, reject) => {
-        try {
-            if (process.platform === constants.platforms.windows) {
-                return resolve(
-                    batchScriptContent +
-                        substituteCommand(
-                            command,
-                            constants.urlArgument[constants.platforms.windows]
-                        )
-                );
-            }
-            ejs.renderFile(
-                join(__dirname, './wrapperScript.ejs'),
-                { command },
-                function (err, str) {
-                    if (err) return reject(err);
-                    resolve(str);
-                }
-            );
-            return;
-        } catch (e) {
-            reject(e);
-        }
-    });
+    const isWindows = process.platform === constants.platforms.windows || isWsl;
+    const preScriptContent = isWindows ? batchScriptContent : bashScriptContent;
+    if (isWindows) {
+        command = substituteCommand(
+            command,
+            constants.urlArgument[constants.platforms.windows]
+        );
+    }
+
+    return preScriptContent + command;
 };
 
 const saveWrapperScript = (protocol, content) => {
@@ -60,7 +50,7 @@ const saveWrapperScript = (protocol, content) => {
 };
 
 exports.handleWrapperScript = async (protocol, command) => {
-    const contents = await getWrapperScriptContent(command);
+    const contents = getWrapperScriptContent(command);
     const scriptPath = saveWrapperScript(protocol, contents);
     if (process.platform !== constants.platforms.windows) {
         const chmod = await shell.exec('chmod +x "' + scriptPath + '"');
