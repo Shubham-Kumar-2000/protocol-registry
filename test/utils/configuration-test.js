@@ -21,7 +21,6 @@ const validateRegistrationConfig = async (protocol) => {
     }
     if (process.platform === constants.platforms.linux) {
         validateLinuxDesktopFile(protocol, defaultApp);
-        console.log('Registration Config validated');
         return;
     }
     throw new Error('Unknown platform');
@@ -83,7 +82,6 @@ const validateLinuxDesktopFileNotExist = async (defaultApp) => {
         defaultApp
     );
     expect(registeredDesktopFileExist).toBeFalsy();
-    console.log('DeRegistration Config validated');
 };
 
 module.exports = {
