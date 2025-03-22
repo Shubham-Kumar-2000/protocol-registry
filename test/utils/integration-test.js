@@ -3,6 +3,8 @@ const { expect, afterAll, beforeEach, afterEach } = require('@jest/globals');
 const randomString = require('randomstring');
 const shell = require('../../src/utils/shell');
 const constants = require('../config/constants');
+const ProtocolRegistry = require('../../src');
+const { getConfigPaths, getDesktopFileData } = require('./helpers');
 
 let wsServer = null;
 
@@ -53,6 +55,38 @@ const checkRegistration = async (protocol, options) => {
     expect(childProcessData.args.includes(url)).toBeTruthy();
 };
 
+const checkDesktopFile = async (protocol) => {
+    if (!constants.checkIntegration) return;
+    const defaultApp = await ProtocolRegistry.getDefaultApp(protocol);
+    if (process.platform === constants.platforms.windows) {
+        //TODO: Implement windows desktop file check
+    }
+    if (process.platform === constants.platforms.macos) {
+        // TODO: Implement macos desktop file check
+    }
+    if (process.platform === constants.platforms.linux) {
+        const configPaths = getConfigPaths();
+
+        for (const configPath of configPaths) {
+            const content = await shell.exec(
+                `cat '${configPath}' | grep '${defaultApp}'`
+            );
+            expect(content.code).toBe(0);
+            expect(content.stdout).toBeTruthy();
+            expect(content.stdout.includes(defaultApp)).toBeTruthy();
+            break;
+        }
+
+        const { actualAppName, fileData } = getDesktopFileData(defaultApp);
+        expect(
+            fileData.includes(`PRIdentifier=com.protocol.registry.${protocol}`)
+        ).toBeTruthy();
+        expect(fileData.includes(`Name=${actualAppName}`)).toBeTruthy();
+        return;
+    }
+    throw new Error('Unknown platform');
+};
+
 const checkDeRegistration = async (protocol) => {
     if (!constants.checkIntegration) return;
     if (process.platform === constants.platforms.windows) return; // registry is the only way to validate in windows
@@ -86,5 +120,6 @@ module.exports = {
     checkRegistration,
     checkDeRegistration,
     destroyServer,
-    createServer
+    createServer,
+    checkDesktopFile
 };

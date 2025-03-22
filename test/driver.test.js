@@ -10,7 +10,10 @@ const { homedir } = require('../src/config/constants');
 const fs = require('fs');
 
 const ProtocolRegistry = require('../src');
-const { checkRegistration } = require('./utils/integration-test');
+const {
+    checkRegistration,
+    checkDesktopFile
+} = require('./utils/integration-test');
 const constants = require('./config/constants');
 
 const protocol = 'regimen';
@@ -103,6 +106,7 @@ test.each([
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
         await checkRegistration(protocol, args.options || {});
+        await checkDesktopFile(protocol);
     },
     constants.jestTimeOut
 );
