@@ -60,9 +60,11 @@ const checkDesktopFile = async (protocol) => {
     const defaultApp = await ProtocolRegistry.getDefaultApp(protocol);
     if (process.platform === constants.platforms.windows) {
         //TODO: Implement windows desktop file check
+        return;
     }
     if (process.platform === constants.platforms.macos) {
         // TODO: Implement macos desktop file check
+        return;
     }
     if (process.platform === constants.platforms.linux) {
         const configPaths = getConfigPaths();
