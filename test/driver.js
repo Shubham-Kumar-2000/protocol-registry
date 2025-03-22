@@ -8,7 +8,7 @@ ProtocolRegistry.register(
     `node "${path.join(__dirname, './tester.js')}" "$_URL_"`,
     {
         override: true,
-        terminal: true,
+        terminal: false,
         appName: 'My-Custom App 007'
     }
 ).then(async () => {

@@ -2,5 +2,5 @@
 <%if (terminal) { %>
 cmd /k CALL <%- command %>
 <% } else { %>
-powershell -WindowStyle Hidden -Command  <%- command %>
+powershell -WindowStyle Hidden -Command  <%- command %> >NUL 2>&1
 <% } %>
