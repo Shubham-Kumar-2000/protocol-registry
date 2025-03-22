@@ -1,6 +1,6 @@
 @echo off
 <%if (terminal) { %>
-cmd /k <%- command %>
+cmd /k CALL <%- command %>
 <% } else { %>
-start /B "<%= appName %>" <%- command %>
+powershell -WindowStyle Hidden -Command  <%- command %>
 <% } %>
