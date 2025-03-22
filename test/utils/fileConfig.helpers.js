@@ -26,7 +26,18 @@ const getDesktopFileData = (defaultApp) => {
     };
 };
 
+const checkIfRegisteredDesktopFileExists = (defaultApp) => {
+    const desktopFilePath = join(
+        constants.osHomeDir,
+        '.local/share/applications',
+        defaultApp
+    );
+
+    return fs.existsSync(desktopFilePath);
+};
+
 module.exports = {
     getMimeAppsFilePath,
-    getDesktopFileData
+    getDesktopFileData,
+    checkIfRegisteredDesktopFileExists
 };
