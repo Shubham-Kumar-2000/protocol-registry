@@ -1,7 +1,6 @@
 set -e;
 <%if (terminal > 0) { %>
     osacompile -o '<%- appPath %>'  '<%- appSource %>'
-    node '<%- plistMutator %>' '<%- appPath %>' <%= protocol %> internal
 <% } %>
 osacompile -o '<%- urlAppPath %>'  '<%- urlAppSource %>' 
 node '<%- plistMutator %>' '<%- urlAppPath %>' <%= protocol %> 

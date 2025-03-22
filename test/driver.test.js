@@ -40,10 +40,10 @@ const getCommand = () => {
 
 beforeAll(async () => {
     await ProtocolRegistry.deRegister(protocol, { force: true });
+    await sleep();
 });
 
 afterEach(async () => {
-    await sleep();
     defaultApp = await ProtocolRegistry.getDefaultApp(protocol);
     await ProtocolRegistry.deRegister(protocol, { force: true });
     await validateDeRegistrationConfig(defaultApp);
