@@ -8,12 +8,17 @@ const {
 } = require('@jest/globals');
 const { homedir } = require('../src/config/constants');
 const fs = require('fs');
+const {
+    validateRegistrationConfig,
+    validateDeRegistrationConfig
+} = require('./utils/configuration-test');
 
 const ProtocolRegistry = require('../src');
 const { checkRegistration } = require('./utils/integration-test');
 const constants = require('./config/constants');
 
 const protocol = 'regimen';
+let defaultApp = null;
 
 const sleep = async () => {
     if (process.platform === constants.platforms.macos) {
@@ -38,7 +43,9 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
+    defaultApp = await ProtocolRegistry.getDefaultApp(protocol);
     await ProtocolRegistry.deRegister(protocol, { force: true });
+    await validateDeRegistrationConfig(defaultApp);
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
     }
@@ -103,15 +110,16 @@ test.each([
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
         await checkRegistration(protocol, args.options || {});
+        await validateRegistrationConfig(protocol);
     },
     constants.jestTimeOut
 );
 
-test('Check if exist should be false if protocol is not registered', async () => {
+test('checkIfExists should be false if protocol is not registered', async () => {
     expect(await ProtocolRegistry.checkIfExists('atestproto')).toBeFalsy();
 });
 
-test('Check if exist should be true if protocol is registered', async () => {
+test('checkIfExists should be true if protocol is registered', async () => {
     const options = {
         override: true,
         terminal: false,
