@@ -106,6 +106,8 @@ test.each([
     process.platform + ' $name',
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
+        await sleep();
+
         await checkRegistration(protocol, args.options || {});
         await validateRegistrationConfig(protocol, args.options || {});
 
