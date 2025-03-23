@@ -6,9 +6,9 @@ const shell = require('../utils/shell');
 const constants = require('../config/constants');
 const {
     checkAndRemoveProtocolSchema,
-    checkIfFolderExists,
-    fileContainsExactLine
-} = require('../utils/fileUtil');
+    fileContainsExactLine,
+    findRegisteredDesktopFilePath
+} = require('../utils/linux/fileUtil');
 
 /**
  * Fetches the default app for the given protocol
@@ -37,7 +37,12 @@ const getDefaultApp = async (protocol) => {
     }
 
     if (res.stdout && res.stdout.length > 0) {
-        return res.stdout.trim() !== '' ? res.stdout.trim() : null;
+        const defaultAppName =
+            res.stdout.trim() !== '' ? res.stdout.trim() : null;
+        if (defaultAppName) {
+            return findRegisteredDesktopFilePath(defaultAppName);
+        }
+        return null;
     }
 
     return null;
@@ -122,37 +127,14 @@ const deRegister = async ({ protocol, force, defaultApp }) => {
         join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
     ];
 
+    const defaultAppName = defaultApp.split('/').pop();
+
     checkAndRemoveProtocolSchema(
         configPaths,
-        `x-scheme-handler/${protocol}=${defaultApp}`
+        `x-scheme-handler/${protocol}=${defaultAppName}`
     );
 
-    const desktopFilePaths = [
-        join(constants.osHomeDir, '.local/share/applications', defaultApp)
-    ];
-
-    const xdgEnv = process.env.XDG_DATA_DIRS;
-
-    if (xdgEnv) {
-        const xdgDataDirs = xdgEnv.split(':');
-        if (xdgDataDirs && xdgDataDirs.length) {
-            xdgDataDirs.forEach((path) => {
-                const isApplicationFolderExist = checkIfFolderExists(
-                    join(path, 'applications')
-                );
-
-                if (isApplicationFolderExist) {
-                    desktopFilePaths.push(
-                        join(path, 'applications', defaultApp)
-                    );
-                }
-            });
-        }
-    }
-
-    const desktopFilePath = desktopFilePaths.find(fs.existsSync);
-
-    const fileData = fs.readFileSync(desktopFilePath, 'utf-8');
+    const fileData = fs.readFileSync(defaultApp, 'utf-8');
     const registeredByThisModule = fileContainsExactLine(
         fileData,
         `PRIdentifier=com.protocol.registry.${protocol}`
@@ -160,7 +142,7 @@ const deRegister = async ({ protocol, force, defaultApp }) => {
 
     if (registeredByThisModule || force) {
         // delete the desktop app if created by this protocol
-        fs.rmSync(desktopFilePath, {
+        fs.rmSync(defaultApp, {
             recursive: true,
             force: true
         });
