@@ -18,7 +18,6 @@ const { checkRegistration } = require('./utils/integration-test');
 const constants = require('./config/constants');
 
 const protocol = 'regimen';
-let defaultApp = null;
 
 const sleep = async () => {
     if (process.platform === constants.platforms.macos) {
@@ -43,9 +42,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-    defaultApp = await ProtocolRegistry.getDefaultApp(protocol);
     await ProtocolRegistry.deRegister(protocol, { force: true });
-    await validateDeRegistrationConfig(defaultApp);
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
     }
@@ -106,11 +103,22 @@ test.each([
         }
     }
 ])(
-    '$name',
+    process.platform + ' $name',
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
         await checkRegistration(protocol, args.options || {});
-        await validateRegistrationConfig(protocol);
+        await validateRegistrationConfig(protocol, args.options || {});
+
+        expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
+
+        expect(
+            await ProtocolRegistry.getDefaultApp(protocol)
+        ).toMatchSnapshot();
+
+        await ProtocolRegistry.deRegister(protocol);
+        await validateDeRegistrationConfig(protocol, args.options || {});
+
+        expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
     },
     constants.jestTimeOut
 );
