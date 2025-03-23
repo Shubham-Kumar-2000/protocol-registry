@@ -12,7 +12,7 @@ const {
     protocolValidator,
     deRegistryValidator
 } = require('./utils/validator');
-const { checkIfFolderExists } = require('./linux/utils/fileUtil');
+const { checkIfFolderExists } = require('./utils/fileUtil');
 const { preProcessCommands } = require('./utils/processCommand');
 const { homedir } = constants;
 

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const constants = require('../../config/constants');
+const constants = require('../config/constants');
 const { join } = require('path');
 
 const checkAndRemoveFileLines = (filePaths, discardLines) => {

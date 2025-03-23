@@ -8,7 +8,7 @@ const {
     fileContainsExactLine,
     findRegisteredDesktopFilePath,
     checkAndRemoveFileLines
-} = require('./utils/fileUtil');
+} = require('../utils/fileUtil');
 
 /**
  * Fetches the default app for the given protocol
