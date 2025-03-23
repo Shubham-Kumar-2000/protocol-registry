@@ -38,10 +38,10 @@ const getCommand = () => {
 
 beforeAll(async () => {
     await ProtocolRegistry.deRegister(protocol, { force: true });
-    await sleep();
 });
 
 afterEach(async () => {
+    await sleep();
     await ProtocolRegistry.deRegister(protocol, { force: true });
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
