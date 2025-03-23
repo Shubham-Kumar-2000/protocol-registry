@@ -3,6 +3,7 @@ const constants = require('../config/constants');
 const { join } = require('path');
 const fs = require('fs');
 const Registry = require('winreg');
+const { matchSnapshot } = require('../utils/matchSnapshot');
 
 const getDesktopFileDetails = (protocol, options) => {
     const desktopFileName = (options.appName || `url-${protocol}`) + '.bat';
@@ -43,10 +44,10 @@ const validateRegistrationConfiguration = async (protocol, options) => {
     expect(fs.existsSync(desktopFilePath)).toBeTruthy();
 
     const desktopFileContent = fs.readFileSync(desktopFilePath, 'utf-8');
-    expect(desktopFileContent).toMatchSnapshot();
+    matchSnapshot(desktopFileContent);
 
     const scriptFileContent = fs.readFileSync(scriptFilePath, 'utf-8');
-    expect(scriptFileContent).toMatchSnapshot();
+    matchSnapshot(scriptFileContent);
 
     const { registry, commandRegistry } = getRegistry(protocol);
     const appName = await new Promise((resolve, reject) =>

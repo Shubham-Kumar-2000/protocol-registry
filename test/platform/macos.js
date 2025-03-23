@@ -2,6 +2,7 @@ const { expect } = require('@jest/globals');
 const constants = require('../config/constants');
 const { join } = require('path');
 const fs = require('fs');
+const { matchSnapshot } = require('../utils/matchSnapshot');
 
 const getDesktopFileDetails = (protocol, options) => {
     const mainDesktopFileName = (options.appName || `url-${protocol}`) + '.app';
@@ -44,17 +45,17 @@ const validateRegistrationConfiguration = async (protocol, options) => {
         join(mainDesktopFilePath, './Contents/Info.plist'),
         'utf-8'
     );
-    expect(mainDesktopFilePlistContent).toMatchSnapshot();
+    matchSnapshot(mainDesktopFilePlistContent);
 
     const scriptFileContent = fs.readFileSync(scriptFilePath, 'utf-8');
-    expect(scriptFileContent).toMatchSnapshot();
+    matchSnapshot(scriptFileContent);
 
     if (options.terminal) {
         const internalDesktopFilePlistContent = fs.readFileSync(
             join(mainDesktopFilePath, './Contents/Info.plist'),
             'utf-8'
         );
-        expect(internalDesktopFilePlistContent).toMatchSnapshot();
+        matchSnapshot(internalDesktopFilePlistContent);
     }
 };
 

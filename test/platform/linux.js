@@ -2,6 +2,7 @@ const { expect } = require('@jest/globals');
 const constants = require('../config/constants');
 const { join } = require('path');
 const fs = require('fs');
+const { matchSnapshot } = require('../utils/matchSnapshot');
 
 const getMimeAppsFilePath = () => {
     const mimeAppPaths = [
@@ -50,10 +51,10 @@ const validateRegistrationConfiguration = async (protocol, options) => {
     }
 
     const desktopFileContent = fs.readFileSync(desktopFilePath, 'utf-8');
-    expect(desktopFileContent).toMatchSnapshot();
+    matchSnapshot(desktopFileContent);
 
     const scriptFileContent = fs.readFileSync(scriptFilePath, 'utf-8');
-    expect(scriptFileContent).toMatchSnapshot();
+    matchSnapshot(scriptFileContent);
 };
 
 const validateDeRegistrationConfiguration = async (protocol, options) => {

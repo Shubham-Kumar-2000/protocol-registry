@@ -16,6 +16,7 @@ const {
 const ProtocolRegistry = require('../src');
 const { checkRegistration } = require('./utils/integration-test');
 const constants = require('./config/constants');
+const { matchSnapshot } = require('./utils/matchSnapshot');
 
 const protocol = 'regimen';
 
@@ -26,12 +27,7 @@ const sleep = async () => {
 };
 
 const getCommand = () => {
-    if (process.platform === constants.platforms.windows) {
-        return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
-            constants.wssPort
-        }`;
-    }
-    return `node '${path.join(__dirname, './test runner.js')}' "$_URL_" ${
+    return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
         constants.wssPort
     }`;
 };
@@ -113,9 +109,7 @@ test.each([
 
         expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
 
-        expect(
-            await ProtocolRegistry.getDefaultApp(protocol)
-        ).toMatchSnapshot();
+        matchSnapshot(await ProtocolRegistry.getDefaultApp(protocol));
 
         await ProtocolRegistry.deRegister(protocol);
         await validateDeRegistrationConfig(protocol, args.options || {});

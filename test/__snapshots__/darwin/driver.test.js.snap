@@ -72,10 +72,10 @@ exports[`darwin should register protocol with custom app name 1`] = `
 exports[`darwin should register protocol with custom app name 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
-exports[`darwin should register protocol with custom app name 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/custom-app-name.app/"`;
+exports[`darwin should register protocol with custom app name 3`] = `"HOME_DIR/.protocol-registry/regimen/custom-app-name.app/"`;
 
 exports[`darwin should register protocol with custom app name with multiple spaces 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -149,7 +149,7 @@ exports[`darwin should register protocol with custom app name with multiple spac
 exports[`darwin should register protocol with custom app name with multiple spaces 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
 exports[`darwin should register protocol with custom app name with multiple spaces 3`] = `
@@ -221,7 +221,7 @@ exports[`darwin should register protocol with custom app name with multiple spac
 </plist>"
 `;
 
-exports[`darwin should register protocol with custom app name with multiple spaces 4`] = `"/Users/shubhamkumar/.protocol-registry/regimen/custom App-name 1.app/"`;
+exports[`darwin should register protocol with custom app name with multiple spaces 4`] = `"HOME_DIR/.protocol-registry/regimen/custom App-name 1.app/"`;
 
 exports[`darwin should register protocol with override is false 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -295,10 +295,10 @@ exports[`darwin should register protocol with override is false 1`] = `
 exports[`darwin should register protocol with override is false 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
-exports[`darwin should register protocol with override is false 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+exports[`darwin should register protocol with override is false 3`] = `"HOME_DIR/.protocol-registry/regimen/url-regimen.app/"`;
 
 exports[`darwin should register protocol with override is true and protocol does not exist 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -372,10 +372,10 @@ exports[`darwin should register protocol with override is true and protocol does
 exports[`darwin should register protocol with override is true and protocol does not exist 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
-exports[`darwin should register protocol with override is true and protocol does not exist 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+exports[`darwin should register protocol with override is true and protocol does not exist 3`] = `"HOME_DIR/.protocol-registry/regimen/url-regimen.app/"`;
 
 exports[`darwin should register protocol with terminal is false 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -449,10 +449,10 @@ exports[`darwin should register protocol with terminal is false 1`] = `
 exports[`darwin should register protocol with terminal is false 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
-exports[`darwin should register protocol with terminal is false 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+exports[`darwin should register protocol with terminal is false 3`] = `"HOME_DIR/.protocol-registry/regimen/url-regimen.app/"`;
 
 exports[`darwin should register protocol with terminal is true 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -526,7 +526,7 @@ exports[`darwin should register protocol with terminal is true 1`] = `
 exports[`darwin should register protocol with terminal is true 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
 exports[`darwin should register protocol with terminal is true 3`] = `
@@ -598,7 +598,7 @@ exports[`darwin should register protocol with terminal is true 3`] = `
 </plist>"
 `;
 
-exports[`darwin should register protocol with terminal is true 4`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+exports[`darwin should register protocol with terminal is true 4`] = `"HOME_DIR/.protocol-registry/regimen/url-regimen.app/"`;
 
 exports[`darwin should register protocol without options 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
@@ -672,7 +672,7 @@ exports[`darwin should register protocol without options 1`] = `
 exports[`darwin should register protocol without options 2`] = `
 "#!/usr/bin/env bash
 _URL_=$1
-node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_URL_" 8000"
+node "TEST_RUNNER_FILE" "$_URL_" 8000"
 `;
 
-exports[`darwin should register protocol without options 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+exports[`darwin should register protocol without options 3`] = `"HOME_DIR/.protocol-registry/regimen/url-regimen.app/"`;
