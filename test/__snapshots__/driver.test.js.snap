@@ -676,3 +676,150 @@ node '/Users/shubhamkumar/Open Source/protocol-registry/test/test runner.js' "$_
 `;
 
 exports[`darwin should register protocol without options 3`] = `"/Users/shubhamkumar/.protocol-registry/regimen/url-regimen.app/"`;
+
+exports[`linux should register protocol with custom app name 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=custom-app-name 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=false
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with custom app name 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with custom app name 3`] = `"/home/jacob/.local/share/applications/custom-app-name.regimen.pr.desktop"`;
+
+exports[`linux should register protocol with custom app name with multiple spaces 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=custom App-name 1 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=true
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with custom app name with multiple spaces 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with custom app name with multiple spaces 3`] = `"/home/jacob/.local/share/applications/custom_App-name_1.regimen.pr.desktop"`;
+
+exports[`linux should register protocol with override is false 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=url-regimen 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=false
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with override is false 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with override is false 3`] = `"/home/jacob/.local/share/applications/url-regimen.regimen.pr.desktop"`;
+
+exports[`linux should register protocol with override is true and protocol does not exist 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=url-regimen 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=false
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with override is true and protocol does not exist 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with override is true and protocol does not exist 3`] = `"/home/jacob/.local/share/applications/url-regimen.regimen.pr.desktop"`;
+
+exports[`linux should register protocol with terminal is false 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=url-regimen 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=false
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with terminal is false 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with terminal is false 3`] = `"/home/jacob/.local/share/applications/url-regimen.regimen.pr.desktop"`;
+
+exports[`linux should register protocol with terminal is true 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=url-regimen 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=true
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol with terminal is true 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol with terminal is true 3`] = `"/home/jacob/.local/share/applications/url-regimen.regimen.pr.desktop"`;
+
+exports[`linux should register protocol without options 1`] = `
+"[Desktop Entry]
+Type=Application
+Name=url-regimen 
+Exec='/home/jacob/.protocol-registry/regimen/regimen-internal-script.pr.sh' '%u' 
+StartupNotify=false
+Terminal=false
+MimeType=x-scheme-handler/regimen;
+PRIdentifier=com.protocol.registry.regimen
+NoDisplay=true
+X-Scheme-Handler=regimen"
+`;
+
+exports[`linux should register protocol without options 2`] = `
+"#!/usr/bin/env bash
+_URL_=$1
+node '/home/jacob/Desktop/protocol-registry/test/test runner.js' "$_URL_" 8000"
+`;
+
+exports[`linux should register protocol without options 3`] = `"/home/jacob/.local/share/applications/url-regimen.regimen.pr.desktop"`;

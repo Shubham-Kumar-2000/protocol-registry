@@ -5,8 +5,8 @@ const fs = require('fs');
 
 const getMimeAppsFilePath = () => {
     const mimeAppPaths = [
-        join(constants.osHomeDir, '.config', 'mimeapps.list'),
-        join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
+        join(constants.osHomeDir, '.config', 'mimeapps.list')
+        // join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
     ];
 
     return mimeAppPaths;
@@ -15,7 +15,7 @@ const getMimeAppsFilePath = () => {
 const getDesktopFileDetails = (protocol, options) => {
     const desktopFileName =
         (options.appName || `url-${protocol}`).replaceAll(' ', '_') +
-        '.desktop';
+        `.${protocol}.pr.desktop`;
     const desktopFilePath = join(
         constants.osHomeDir,
         '.local/share/applications',
