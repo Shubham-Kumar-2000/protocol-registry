@@ -5,9 +5,9 @@ const { join } = require('path');
 const shell = require('../utils/shell');
 const constants = require('../config/constants');
 const {
-    checkAndRemoveProtocolSchema,
     fileContainsExactLine,
-    findRegisteredDesktopFilePath
+    findRegisteredDesktopFilePath,
+    checkAndRemoveFileLines
 } = require('./utils/fileUtil');
 
 /**
@@ -129,10 +129,9 @@ const deRegister = async ({ protocol, force, defaultApp }) => {
 
     const defaultAppName = defaultApp.split('/').pop();
 
-    checkAndRemoveProtocolSchema(
-        configPaths,
+    checkAndRemoveFileLines(configPaths, [
         `x-scheme-handler/${protocol}=${defaultAppName}`
-    );
+    ]);
 
     const fileData = fs.readFileSync(defaultApp, 'utf-8');
     const registeredByThisModule = fileContainsExactLine(
@@ -146,6 +145,16 @@ const deRegister = async ({ protocol, force, defaultApp }) => {
             recursive: true,
             force: true
         });
+    } else {
+        checkAndRemoveFileLines(
+            [defaultApp],
+            [
+                `MimeType=x-scheme-handler/${protocol};`,
+                `MimeType=x-scheme-handler/${protocol}`,
+                `X-Scheme-Handler=${protocol}`,
+                `X-Scheme-Handler=${protocol};`
+            ]
+        );
     }
 
     const internalProtocolDir = join(constants.homedir, protocol);
