@@ -8,7 +8,7 @@ const {
     checkAndRemoveProtocolSchema,
     fileContainsExactLine,
     findRegisteredDesktopFilePath
-} = require('../utils/linux/fileUtil');
+} = require('./utils/fileUtil');
 
 /**
  * Fetches the default app for the given protocol
