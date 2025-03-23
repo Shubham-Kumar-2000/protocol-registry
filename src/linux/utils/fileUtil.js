@@ -2,13 +2,13 @@ const fs = require('fs');
 const constants = require('../../config/constants');
 const { join } = require('path');
 
-const checkAndRemoveProtocolSchema = (filePaths, protocolSchemaName) => {
+const checkAndRemoveFileLines = (filePaths, discardLines) => {
     for (const filePath of filePaths) {
         if (fs.existsSync(filePath)) {
             const fileData = fs.readFileSync(filePath, 'utf-8');
             const lines = fileData.split('\n');
             const filteredLines = lines.filter(
-                (line) => line !== protocolSchemaName
+                (line) => !discardLines.includes(line)
             );
 
             if (filteredLines && filteredLines.length > 1) {
@@ -38,9 +38,7 @@ const fileContainsExactLine = (fileContent, searchLine) => {
 };
 
 const findRegisteredDesktopFilePath = (defaultApp) => {
-    const desktopFilePaths = [
-        join(constants.osHomeDir, '.local/share/applications', defaultApp)
-    ];
+    const desktopFilePaths = [];
 
     const xdgEnv = process.env.XDG_DATA_DIRS;
 
@@ -61,12 +59,22 @@ const findRegisteredDesktopFilePath = (defaultApp) => {
         }
     }
 
+    const defaultAppPath = join(
+        constants.osHomeDir,
+        '.local/share/applications',
+        defaultApp
+    );
+
+    if (!desktopFilePaths.includes(defaultAppPath)) {
+        desktopFilePaths.push(defaultAppPath);
+    }
+
     return desktopFilePaths.find(fs.existsSync);
 };
 
 module.exports = {
-    checkAndRemoveProtocolSchema,
     checkIfFolderExists,
     fileContainsExactLine,
-    findRegisteredDesktopFilePath
+    findRegisteredDesktopFilePath,
+    checkAndRemoveFileLines
 };
