@@ -68,7 +68,7 @@ jobs:
         rm -rf node_modules
         npm i
         npm run build --if-present
-        npm run check
+        export TEST_INTEGRATION=TRUE; npm run check
   macos:
 
     runs-on:	macos-latest
