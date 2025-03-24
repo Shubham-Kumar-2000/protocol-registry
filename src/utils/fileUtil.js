@@ -1,12 +1,14 @@
 const fs = require('fs');
+const constants = require('../config/constants');
+const { join } = require('path');
 
-const checkAndRemoveProtocolSchema = (filePaths, protocolSchemaName) => {
+const checkAndRemoveFileLines = (filePaths, discardLines) => {
     for (const filePath of filePaths) {
         if (fs.existsSync(filePath)) {
             const fileData = fs.readFileSync(filePath, 'utf-8');
             const lines = fileData.split('\n');
             const filteredLines = lines.filter(
-                (line) => line !== protocolSchemaName
+                (line) => !discardLines.includes(line)
             );
 
             if (filteredLines && filteredLines.length > 1) {
@@ -35,8 +37,44 @@ const fileContainsExactLine = (fileContent, searchLine) => {
     return false;
 };
 
+const findRegisteredDesktopFilePath = (defaultApp) => {
+    const desktopFilePaths = [];
+
+    const xdgEnv = process.env.XDG_DATA_DIRS;
+
+    if (xdgEnv) {
+        const xdgDataDirs = xdgEnv.split(':');
+        if (xdgDataDirs && xdgDataDirs.length) {
+            xdgDataDirs.forEach((path) => {
+                const isApplicationFolderExist = checkIfFolderExists(
+                    join(path, 'applications')
+                );
+
+                if (isApplicationFolderExist) {
+                    desktopFilePaths.push(
+                        join(path, 'applications', defaultApp)
+                    );
+                }
+            });
+        }
+    }
+
+    const defaultAppPath = join(
+        constants.osHomeDir,
+        '.local/share/applications',
+        defaultApp
+    );
+
+    if (!desktopFilePaths.includes(defaultAppPath)) {
+        desktopFilePaths.push(defaultAppPath);
+    }
+
+    return desktopFilePaths.find(fs.existsSync);
+};
+
 module.exports = {
-    checkAndRemoveProtocolSchema,
     checkIfFolderExists,
-    fileContainsExactLine
+    fileContainsExactLine,
+    findRegisteredDesktopFilePath,
+    checkAndRemoveFileLines
 };

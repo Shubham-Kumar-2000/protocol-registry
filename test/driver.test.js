@@ -8,33 +8,26 @@ const {
 } = require('@jest/globals');
 const { homedir } = require('../src/config/constants');
 const fs = require('fs');
+const {
+    validateRegistrationConfig,
+    validateDeRegistrationConfig
+} = require('./utils/configuration-test');
 
 const ProtocolRegistry = require('../src');
 const { checkRegistration } = require('./utils/integration-test');
 const constants = require('./config/constants');
+const { matchSnapshot } = require('./utils/matchSnapshot');
 
 const protocol = 'regimen';
 
-const sleep = async () => {
-    if (process.platform === constants.platforms.macos) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-};
-
 const getCommand = () => {
-    if (process.platform === constants.platforms.windows) {
-        return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
-            constants.wssPort
-        }`;
-    }
-    return `node '${path.join(__dirname, './test runner.js')}' "$_URL_" ${
+    return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
         constants.wssPort
     }`;
 };
 
 beforeAll(async () => {
     await ProtocolRegistry.deRegister(protocol, { force: true });
-    await sleep();
 });
 
 afterEach(async () => {
@@ -99,19 +92,30 @@ test.each([
         }
     }
 ])(
-    '$name',
+    process.platform + ' $name',
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
+
         await checkRegistration(protocol, args.options || {});
+        await validateRegistrationConfig(protocol, args.options || {});
+
+        expect(await ProtocolRegistry.checkIfExists(protocol)).toBeTruthy();
+
+        matchSnapshot(await ProtocolRegistry.getDefaultApp(protocol));
+
+        await ProtocolRegistry.deRegister(protocol);
+        await validateDeRegistrationConfig(protocol, args.options || {});
+
+        expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
     },
     constants.jestTimeOut
 );
 
-test('Check if exist should be false if protocol is not registered', async () => {
+test('checkIfExists should be false if protocol is not registered', async () => {
     expect(await ProtocolRegistry.checkIfExists('atestproto')).toBeFalsy();
 });
 
-test('Check if exist should be true if protocol is registered', async () => {
+test('checkIfExists should be true if protocol is registered', async () => {
     const options = {
         override: true,
         terminal: false,
@@ -149,8 +153,6 @@ test('Check if deRegister should remove the protocol', async () => {
         }
     );
 
-    await sleep();
-
     await ProtocolRegistry.deRegister(protocol);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
@@ -166,8 +168,6 @@ test('Check if deRegister should delete the apps if registered through this modu
             appName: 'App Name'
         }
     );
-
-    await sleep();
 
     await ProtocolRegistry.deRegister(protocol);
 
@@ -195,8 +195,6 @@ test('Check if deRegister should not delete the homedir if other registered apps
         }
     );
 
-    await sleep();
-
     await ProtocolRegistry.deRegister(protocol + 'del');
 
     expect(fs.existsSync(homedir)).toBeTruthy();
@@ -212,8 +210,6 @@ test('Check if app should be registered again post the same app is deRegistered'
             appName: 'my-custom-app-name'
         }
     );
-
-    await sleep();
 
     await ProtocolRegistry.deRegister(protocol);
 

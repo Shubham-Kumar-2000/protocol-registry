@@ -23,21 +23,6 @@ const getRegistry = (protocol) => {
 };
 
 /**
- * Checks if the given protocol already exist on not
- * @param {string=} protocol - Protocol on which is required to be checked.
- * @returns {Promise}
- */
-const checkIfExists = (protocol) => {
-    const { registry } = getRegistry(protocol);
-    return new Promise((resolve, reject) => {
-        registry.keyExists((err, exist) => {
-            if (err) return reject(err);
-            resolve(exist);
-        });
-    });
-};
-
-/**
  * Fetches the default app for the given protocol
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
@@ -48,7 +33,7 @@ const getDefaultApp = (protocol) => {
         registry.keyExists((err, exist) => {
             if (err) return reject(err);
             if (exist) {
-                resolve(processRegistryPath(registry.path));
+                return resolve(processRegistryPath(registry.path));
             }
             resolve(null);
         });
@@ -140,10 +125,8 @@ const register = async (options) => {
  */
 const deRegister = async ({ protocol }) => {
     const { registry } = getRegistry(protocol);
-    const exists = await checkIfExists(protocol);
-    if (!exists) return;
 
-    new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         registry.destroy((err) => {
             if (err) return reject(err);
             return resolve();
