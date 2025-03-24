@@ -50,6 +50,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    - uses: Vampire/setup-wsl@v5
+      with:
+        distribution: Ubuntu
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -58,6 +61,14 @@ jobs:
     - run: npm i
     - run: npm run build --if-present
     - run: npm run check
+    - shell: wsl-bash {0}
+      run: |
+        gio --version
+        mkdir -p ~/.local/share/applications
+        rm -rf node_modules
+        npm i
+        npm run build --if-present
+        npm run check
   macos:
 
     runs-on:	macos-latest
