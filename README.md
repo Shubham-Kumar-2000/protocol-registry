@@ -2,7 +2,10 @@
 
 [![License](https://img.shields.io/github/license/Shubham-Kumar-2000/protocol-registry)](https://github.com/Shubham-Kumar-2000/protocol-registry)
 [![Latest version](https://img.shields.io/npm/v/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+[![Known Vulnerabilities](https://snyk.io/test/github/Shubham-Kumar-2000/protocol-registry/badge.svg)](https://snyk.io/test/github/Shubham-Kumar-2000/protocol-registry)
+![Nodejs workflow status](https://github.com/Shubham-Kumar-2000/protocol-registry/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![Installs](https://img.shields.io/npm/dt/protocol-registry)](https://www.npmjs.com/package/protocol-registry)
+[![Node version](https://img.shields.io/node/v/protocol-registry.svg?style=flat)](https://www.npmjs.com/package/protocol-registry)
 
 > Registers protocols like:- yourapp:// or myapp:// etc. to open your nodejs app from different browsers.
 
@@ -40,11 +43,11 @@ console.log("Registering...");
 // Registers the Protocol
 ProtocolRegistry.register(
     'testproto', // sets protocol for your command , testproto://**
-    `node ${path.join(__dirname, './tester.js')} $_URL_`, // this will be executed with a extra argument %url from which it was initiated
+    `node "${path.join(__dirname, './tester.js')}" "$_URL_"`, // this will be executed where $_URL_ will have actual url value
     {
         override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
         terminal: true, // Use this to run your command inside a terminal
-        appName: 'my-custom-script-name' // Custom app name.
+        appName: 'my-custom-app-name' // Custom app name.
     }
 ).then(async () => {
     console.log('Successfully registered');
@@ -135,7 +138,7 @@ const ProtocolRegistry = require("protocol-registry")
 if (dev) {
     ProtocolRegistry.register(
         'testproto',
-        `"${process.execPath}" "${path.resolve(process.argv[1])}" $_URL_`,
+        `"${process.execPath}" "${path.resolve(process.argv[1])}" "$_URL_"`,
         {
             override: true,
             script: true,
@@ -165,7 +168,7 @@ Register function accept the below mentioned params
 | name | types | default | details |
 | ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | protocol | String (required) | NA | Only alphabets allowed. Your command will be executed when any url starting with this protocol is opened i.e. "myapp://test","testproto://abcd?mode=dev", etc. And please make sure that the protocol is unique to your application. |
-| command | String (required) | NA | This command will be executed when the protocol is called. **$\_URL\_** mentioned anywhere in your command will be replaced by the url by which it is initiated. |
+| command | String (required) | NA | This command will be executed when the protocol is called. **$\_URL\_** mentioned anywhere in your command will be replaced by the url by which it is initiated. Make sure to wrap it with double quotes for safe parsing. Avoid using single quotes as they don't allow for variable expansion. |
 | options.override | Boolean | false | If this is not true, then you will get an error that protocol is already being used. So, first check if the protocol exist or not then take action accordingly (Refrain from using it). |
 | options.terminal | Boolean | false | If this is set true, then first a terminal is opened and then your command is executed inside it.otherwise your command is executed in background and no logs appear but if your program launches any UI / webpage / file, it will be visible. |
 | options.appName | String | `url-${protocol}` | This is the name of the app file that will be created. |
@@ -179,11 +182,13 @@ const path = require("path");
 const ProtocolRegistry = require("protocol-registry");
 
 // Registers the Protocol
-ProtocolRegistry.register({
-  protocol: "testproto",
-  command: `node ${path.join(__dirname, "./tester.js")} $_URL_`,
-  terminal: true,
-})
+ProtocolRegistry.register(
+  "testproto",
+  `node "${path.join(__dirname, "./tester.js")}" "$_URL_"`, 
+  {
+    terminal: true,
+  }
+)
   .then(() => {
     // do something
   })
@@ -197,7 +202,7 @@ ProtocolRegistry.register({
 
 ProtocolRegistry.register(
   "testproto",
-   `node ${path.join(__dirname, "./tester.js")} $_URL_`
+  `node "${path.join(__dirname, "./tester.js")}" "$_URL_"`,
   {
     terminal: false, // Terminal is set to false
   }
@@ -208,7 +213,7 @@ ProtocolRegistry.register(
 
 const commands = `cd path/to/destination
 ls
-node ${path.join(__dirname, "./tester.js")} $_URL_
+node "${path.join(__dirname, "./tester.js")}" "$_URL_"
 `;
 
 ProtocolRegistry.register(
@@ -216,13 +221,12 @@ ProtocolRegistry.register(
   commands,
   {
     terminal: true, // Terminal is set to false
-    appName: 'my-custom-script-name' // This is the name of the app file that will be created.
+    appName: 'My app 007' // This is the name of the app file that will be created.
   }
 );
 // the above code will save your commands to a custom app file
 // and execute it when ever required
 ```
-
 ### checkIfExists(protocol)
 
 Checks if the provided protocol already exists or not.
@@ -242,7 +246,6 @@ const path = require("path");
 
 const ProtocolRegistry = require("protocol-registry");
 
-// Registers the Protocol
 ProtocolRegistry.checkIfExists("testproto")
   .then((res) => {
     console.log(res); // true or false
@@ -251,7 +254,37 @@ ProtocolRegistry.checkIfExists("testproto")
   .catch((e) => {
     // do something
   });
-// Above snippet will check it already some app uses the given protocol or not
+```
+
+### getDefaultApp(protocol)
+
+Fetches the path of the default registered app.
+Returns a Promise which resolves in String or null.
+
+NOTE: In case of windows it returns the registry path instead of app path.
+
+#### params
+
+GetDefaultApp function accept the below mentioned params
+| name | types | default | details |
+| ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| protocol | String (required) | NA | The protocol for which default app needs to be fetched. |
+
+#### Example
+
+```js
+const path = require("path");
+
+const ProtocolRegistry = require("protocol-registry");
+
+ProtocolRegistry.getDefaultApp("testproto")
+  .then((res) => {
+    console.log(res); // AppPath or null
+    // do something
+  })
+  .catch((e) => {
+    // do something
+  });
 ```
 
 ### deRegister(protocol, options={})
@@ -264,7 +297,7 @@ De-Register function accept the below mentioned params
 | name | types | default | details |
 | ---------------| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | protocol | String (required) | NA | The protocol for which default app registration needs to be removed. |
-| options.force | Boolean | false | In some cases just removing the registration is not possible thus removing the app itself is the only option. Thus when force is used it will remove the default app itself. Below is the more detailed explanation. |
+| options.force | Boolean | false | In some cases just removing the registration is not possible thus removing the app itself is the only option. Thus when force is used it will remove the default app itself. **This is not required for the apps registered using this module.** Below is the more detailed explanation. |
 
 #### force : true
 
@@ -273,7 +306,7 @@ In some cases just removing the registration is not possible thus removing the a
 
 - MacOS: Sometime in MacOS, `App Management` permission is required to modify other apps in the system. Thus without force app update may fail. But if the app is registered through this module then it directly deletes the app because we know it doesn't have any other purposes.
 - Windows: In windows there is no effect of this operator.
-- Linux: If force is true or if the app is registered through this module then it deletes the registered desktop file.
+- Linux: By default it only removes the mime handlers from the desktop file but if force is true or if the app is registered through this module then it deletes the registered desktop file.
 
 #### Example
 
