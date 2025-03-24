@@ -52,7 +52,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: Vampire/setup-wsl@v5
       with:
-        distribution: Ubuntu
+        distribution: Ubuntu-24.04
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
