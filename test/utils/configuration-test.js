@@ -1,11 +1,10 @@
-const isWsl = require('is-wsl');
 const constants = require('../../src/config/constants');
 const linux = require('../platform/linux');
 const macos = require('../platform/macos');
 const windows = require('../platform/windows');
 
 const validateRegistrationConfig = async (protocol, options) => {
-    if (process.platform === constants.platforms.windows || isWsl) {
+    if (process.platform === constants.platforms.windows) {
         windows.validateRegistrationConfiguration(protocol, options);
         return;
     }
@@ -21,7 +20,7 @@ const validateRegistrationConfig = async (protocol, options) => {
 };
 
 const validateDeRegistrationConfig = async (protocol, options) => {
-    if (process.platform === constants.platforms.windows || isWsl) {
+    if (process.platform === constants.platforms.windows) {
         windows.validateDeRegistrationConfiguration(protocol, options);
         return;
     }

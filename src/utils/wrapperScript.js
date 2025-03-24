@@ -2,7 +2,6 @@ const constants = require('../config/constants');
 const { join } = require('path');
 const { writeFileSync, existsSync, rmSync, mkdirSync } = require('fs');
 const shell = require('./shell');
-const isWsl = require('is-wsl');
 
 const { homedir } = constants;
 
@@ -19,7 +18,7 @@ const substituteCommand = (command, url) => {
 };
 
 const getWrapperScriptContent = (command) => {
-    const isWindows = process.platform === constants.platforms.windows || isWsl;
+    const isWindows = process.platform === constants.platforms.windows;
     const preScriptContent = isWindows ? batchScriptContent : bashScriptContent;
     if (isWindows) {
         command = substituteCommand(
