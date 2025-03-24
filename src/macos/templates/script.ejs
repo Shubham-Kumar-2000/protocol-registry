@@ -4,4 +4,4 @@ set -e;
 <% } %>
 osacompile -o '<%- urlAppPath %>'  '<%- urlAppSource %>' 
 node '<%- plistMutator %>' '<%- urlAppPath %>' <%= protocol %> 
-open -g '<%- urlAppPath %>'
+open -g -W '<%- urlAppPath %>'

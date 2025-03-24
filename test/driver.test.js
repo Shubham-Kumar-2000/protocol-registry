@@ -20,12 +20,6 @@ const { matchSnapshot } = require('./utils/matchSnapshot');
 
 const protocol = 'regimen';
 
-const sleep = async () => {
-    if (process.platform === constants.platforms.macos) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-};
-
 const getCommand = () => {
     return `node "${path.join(__dirname, './test runner.js')}" "$_URL_" ${
         constants.wssPort
@@ -37,7 +31,6 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-    await sleep();
     await ProtocolRegistry.deRegister(protocol, { force: true });
     if (fs.existsSync(homedir)) {
         fs.rmSync(homedir, { recursive: true, force: true });
@@ -102,7 +95,6 @@ test.each([
     process.platform + ' $name',
     async (args) => {
         await ProtocolRegistry.register(protocol, getCommand(), args.options);
-        await sleep();
 
         await checkRegistration(protocol, args.options || {});
         await validateRegistrationConfig(protocol, args.options || {});
@@ -161,8 +153,6 @@ test('Check if deRegister should remove the protocol', async () => {
         }
     );
 
-    await sleep();
-
     await ProtocolRegistry.deRegister(protocol);
 
     expect(await ProtocolRegistry.checkIfExists(protocol)).toBeFalsy();
@@ -178,8 +168,6 @@ test('Check if deRegister should delete the apps if registered through this modu
             appName: 'App Name'
         }
     );
-
-    await sleep();
 
     await ProtocolRegistry.deRegister(protocol);
 
@@ -207,8 +195,6 @@ test('Check if deRegister should not delete the homedir if other registered apps
         }
     );
 
-    await sleep();
-
     await ProtocolRegistry.deRegister(protocol + 'del');
 
     expect(fs.existsSync(homedir)).toBeTruthy();
@@ -224,8 +210,6 @@ test('Check if app should be registered again post the same app is deRegistered'
             appName: 'my-custom-app-name'
         }
     );
-
-    await sleep();
 
     await ProtocolRegistry.deRegister(protocol);
 
