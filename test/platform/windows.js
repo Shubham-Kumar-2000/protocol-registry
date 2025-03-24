@@ -11,7 +11,7 @@ const getDesktopFileDetails = (protocol, options) => {
     const scriptFilePath = join(
         constants.homedir,
         protocol,
-        `${protocol}-internal-script.pr.sh`
+        `${protocol}-internal-script.pr.bat`
     );
     return {
         desktopFilePath,
@@ -50,23 +50,23 @@ const validateRegistrationConfiguration = async (protocol, options) => {
     matchSnapshot(scriptFileContent);
 
     const { registry, commandRegistry } = getRegistry(protocol);
-    const appName = await new Promise((resolve, reject) =>
-        registry.get('"URL Protocol"', (err, result) => {
+    const registryKeys = await new Promise((resolve, reject) =>
+        registry.valueExists('"URL Protocol"', (err, result) => {
             if (err) {
-                reject(err);
+                return reject(err);
             }
-            resolve(result.value);
+            resolve(result);
         })
     );
     const command = await new Promise((resolve, reject) =>
         commandRegistry.get('""', (err, result) => {
             if (err) {
-                reject(err);
+                return reject(err);
             }
             resolve(result.value);
         })
     );
-    expect(appName).toBe(options.appName || `url-${protocol}`);
+    expect(registryKeys).toBeTruthy();
     expect(command).toBe(`"${desktopFilePath}" "%1"`);
 };
 

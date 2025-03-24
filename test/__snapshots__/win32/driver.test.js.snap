@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`win32 should register protocol with custom app name 1`] = `
+"@echo off
+
+powershell -WindowStyle Hidden -Command  "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%" >NUL 2>&1
+
+"
+`;
+
+exports[`win32 should register protocol with custom app name 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with custom app name 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol with custom app name with multiple spaces 1`] = `
+"@echo off
+
+cmd /k CALL "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%"
+
+"
+`;
+
+exports[`win32 should register protocol with custom app name with multiple spaces 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with custom app name with multiple spaces 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol with override is false 1`] = `
+"@echo off
+
+powershell -WindowStyle Hidden -Command  "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%" >NUL 2>&1
+
+"
+`;
+
+exports[`win32 should register protocol with override is false 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with override is false 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol with override is true and protocol does not exist 1`] = `
+"@echo off
+
+powershell -WindowStyle Hidden -Command  "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%" >NUL 2>&1
+
+"
+`;
+
+exports[`win32 should register protocol with override is true and protocol does not exist 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with override is true and protocol does not exist 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol with terminal is false 1`] = `
+"@echo off
+
+powershell -WindowStyle Hidden -Command  "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%" >NUL 2>&1
+
+"
+`;
+
+exports[`win32 should register protocol with terminal is false 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with terminal is false 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol with terminal is true 1`] = `
+"@echo off
+
+cmd /k CALL "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%"
+
+"
+`;
+
+exports[`win32 should register protocol with terminal is true 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol with terminal is true 3`] = `"HKCU\\Software\\Classes\\regimen"`;
+
+exports[`win32 should register protocol without options 1`] = `
+"@echo off
+
+powershell -WindowStyle Hidden -Command  "HOME_DIR\\.protocol-registry\\regimen\\regimen-internal-script.pr.bat" "%~1%" >NUL 2>&1
+
+"
+`;
+
+exports[`win32 should register protocol without options 2`] = `
+"@echo off
+node "TEST_RUNNER_FILE" "%~1%" 8000"
+`;
+
+exports[`win32 should register protocol without options 3`] = `"HKCU\\Software\\Classes\\regimen"`;
