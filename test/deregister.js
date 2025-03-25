@@ -2,8 +2,20 @@ const ProtocolRegistry = require('../src');
 
 console.log('DeRegistering...');
 
-ProtocolRegistry.deRegister('testproto').then(() => {
-    console.log('Deregistered done!');
-});
+const main = async () => {
+    await ProtocolRegistry.deRegister('testproto')
+        .then(() => {
+            console.log('Deregistered done!');
+        })
+        .catch(console.error);
 
-ProtocolRegistry.checkIfExists('testproto').then(console.log);
+    await ProtocolRegistry.getDefaultApp('testproto')
+        .then(console.log)
+        .catch(console.error);
+
+    await ProtocolRegistry.checkIfExists('testproto')
+        .then(console.log)
+        .catch(console.error);
+};
+
+main();

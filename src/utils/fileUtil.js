@@ -66,10 +66,10 @@ const findRegisteredDesktopFilePath = (defaultApp) => {
     );
 
     if (!desktopFilePaths.includes(defaultAppPath)) {
-        desktopFilePaths.push(defaultAppPath);
+        desktopFilePaths.unshift(defaultAppPath);
     }
 
-    return desktopFilePaths.find(fs.existsSync);
+    return desktopFilePaths.find(fs.existsSync) || null;
 };
 
 module.exports = {
