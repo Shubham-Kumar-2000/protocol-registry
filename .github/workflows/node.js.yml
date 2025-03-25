@@ -36,6 +36,7 @@ jobs:
     - run: npm i
     - run: npm run build --if-present
     - run: xvfb-run npm run check
+    - run: cat temp/data.json
     
   windows:
 
@@ -61,6 +62,7 @@ jobs:
     - run: npm i
     - run: npm run build --if-present
     - run: npm run check
+    - run: type temp/data.json
     - shell: wsl-bash {0}
       run: |
         gio --version
@@ -69,6 +71,7 @@ jobs:
         npm i
         npm run build --if-present
         export TEST_INTEGRATION=TRUE; npm run check
+        cat temp/data.json
   macos:
 
     runs-on:	macos-latest
@@ -90,3 +93,4 @@ jobs:
     - run: npm i
     - run: npm run build --if-present
     - run: npm run check
+    - run: cat temp/data.json

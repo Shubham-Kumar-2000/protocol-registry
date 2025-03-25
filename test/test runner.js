@@ -1,5 +1,5 @@
-// const fs = require('fs');
-// const { join } = require('path');
+const fs = require('fs');
+const { join } = require('path');
 const WebSocket = require('ws');
 
 console.log('Initiated....');
@@ -18,6 +18,16 @@ const isTerminalOthers = () => {
     return process.stdout.isTTY || process.stdin.isTTY;
 };
 
+const data = {
+    terminal: isTerminalWindows() || isTerminalOthers() || false,
+    args: process.argv
+};
+
+fs.writeFileSync(
+    join(__dirname, '../temp/data.json'),
+    JSON.stringify(data, null, 4)
+);
+
 const client = new WebSocket(
     `ws://localhost:${process.argv[process.argv.length - 1]}`
 );
@@ -25,12 +35,7 @@ const client = new WebSocket(
 client.on('open', async () => {
     console.log('WebSocket client connected');
 
-    client.send(
-        JSON.stringify({
-            terminal: isTerminalWindows() || isTerminalOthers() || false,
-            args: process.argv
-        })
-    );
+    client.send(JSON.stringify(data));
 });
 
 client.on('message', (msg) => {
