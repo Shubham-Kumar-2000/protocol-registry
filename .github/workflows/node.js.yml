@@ -68,6 +68,7 @@ jobs:
         gio --version
         mkdir -p ~/.local/share/applications
         rm -rf node_modules
+        rm -rf temp
         npm i
         npm run build --if-present
         export TEST_INTEGRATION=TRUE; npm run check
