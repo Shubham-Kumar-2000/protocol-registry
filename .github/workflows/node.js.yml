@@ -1,0 +1,97 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main",  "protocol-registry-v2" ]
+
+jobs:
+  ubuntu:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      TEST_INTEGRATION: "TRUE"
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: sudo apt-get update
+    - run: sudo apt clean
+    - run: sudo apt-get install -y libglib2.0-dev xvfb xterm xfonts-base
+    - run: gio --version
+    - run: mkdir -p ~/.local/share/applications
+    - run: npm i
+    - run: npm run build --if-present
+    - run: xvfb-run npm run check
+    - run: cat temp/data.json
+    
+  windows:
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      TEST_INTEGRATION: "TRUE"
+    
+    steps:
+    - uses: actions/checkout@v4
+    - uses: Vampire/setup-wsl@v5
+      with:
+        distribution: Ubuntu-24.04
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - run: npm run build --if-present
+    - run: npm run check
+    - run: type temp/data.json
+    - shell: wsl-bash {0}
+      run: |
+        gio --version
+        mkdir -p ~/.local/share/applications
+        rm -rf node_modules
+        rm -rf temp
+        npm i
+        npm run build --if-present
+        export TEST_INTEGRATION=TRUE; npm run check
+        cat temp/data.json
+  macos:
+
+    runs-on:	macos-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      TEST_INTEGRATION: "TRUE"
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - run: npm run build --if-present
+    - run: npm run check
+    - run: cat temp/data.json

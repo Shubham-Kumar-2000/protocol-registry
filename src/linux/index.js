@@ -1,18 +1,21 @@
+/* eslint-disable no-unused-vars */
 const ejs = require('ejs');
 const fs = require('fs');
 const { join } = require('path');
 const shell = require('../utils/shell');
-const { preProcessCommands } = require('../utils/processCommand');
 const constants = require('../config/constants');
-const validator = require('../utils/validator');
-const { registerSchema } = require('../validation/common');
+const {
+    fileContainsExactLine,
+    findRegisteredDesktopFilePath,
+    checkAndRemoveFileLines
+} = require('../utils/fileUtil');
 
 /**
- * Checks if the given protocal already exist on not
+ * Fetches the default app for the given protocol
  * @param {string=} protocol - Protocol on which is required to be checked.
  * @returns {Promise}
  */
-const checkifExists = async (protocol) => {
+const getDefaultApp = async (protocol) => {
     const res = await shell.exec(
         `xdg-mime query default x-scheme-handler/${protocol}`,
         { silent: true }
@@ -26,7 +29,7 @@ const checkifExists = async (protocol) => {
         constants.desktops.current === 'KDE' &&
         res.code === constants.desktops.KDE.noProtoExitCode
     ) {
-        return false;
+        return null;
     }
 
     if (res.code !== 0 || res.stderr) {
@@ -34,10 +37,15 @@ const checkifExists = async (protocol) => {
     }
 
     if (res.stdout && res.stdout.length > 0) {
-        return true;
+        const defaultAppName =
+            res.stdout.trim() !== '' ? res.stdout.trim() : null;
+        if (defaultAppName) {
+            return findRegisteredDesktopFilePath(defaultAppName);
+        }
+        return null;
     }
 
-    return false;
+    return null;
 };
 
 /**
@@ -47,51 +55,29 @@ const checkifExists = async (protocol) => {
  * @param {string=} options.command - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.override - Command which will be executed when the above protocol is initiated
  * @param {boolean=} options.terminal - If set true then your command will open in new terminal
- * @param {boolean=} options.script - If set true then your commands will be saved in a script and that script will be executed
- * @param {string=} options.scriptName - Name of the script file by default it will be ${protocol}.sh
- * @param {function (err)} cb - callback function Optional
+ * @param {string=} options.appName - Name of the app by default it will be `url-${protocol}`
+ * @returns {Promise}
  */
-
-const register = async (options, cb) => {
-    let res = null;
-    const validOptions = validator(registerSchema, options);
-    const {
-        protocol,
-        override,
-        terminal,
-        script: scriptRequired
-    } = validOptions;
-    let { command } = validOptions;
-    if (cb && typeof cb !== 'function')
-        throw new Error('Callback is not function');
+const register = async (options) => {
+    const { protocol, command, terminal, appName } = options;
 
     let tempDir = null;
     try {
-        const exist = await checkifExists(protocol);
-
-        if (exist) {
-            if (!override) throw new Error('Protocol already exists');
-        }
-
         tempDir = constants.tmpdir(protocol);
 
-        const desktopFileName = `${protocol}.desktop`;
+        const desktopFileName = `${appName.replaceAll(
+            ' ',
+            '_'
+        )}.${protocol}.pr.desktop`;
         const desktopFilePath = join(tempDir, desktopFileName);
         const desktopTemplate = join(__dirname, './templates', 'desktop.ejs');
         const scriptTemplate = join(__dirname, './templates', 'script.ejs');
         const scriptFilePath = join(tempDir, 'script.sh');
 
-        command = await preProcessCommands(
-            protocol,
-            command,
-            scriptRequired,
-            options.scriptName
-        );
-
         const desktopFileContent = await new Promise((resolve, reject) => {
             ejs.renderFile(
                 desktopTemplate,
-                { protocol, command, terminal },
+                { protocol, command, terminal, appName },
                 function (err, str) {
                     if (err) return reject(err);
                     resolve(str);
@@ -120,17 +106,67 @@ const register = async (options, cb) => {
         });
         if (scriptResult.code != 0 || scriptResult.stderr)
             throw new Error(scriptResult.stderr);
-    } catch (e) {
-        if (!cb) throw e;
-        res = e;
     } finally {
         if (tempDir) {
             fs.rmSync(tempDir, { recursive: true, force: true });
         }
     }
-    if (cb) return cb(res);
 };
+
+/**
+ * Removes the registration of the given protocol
+ * @param {object?} [options={}] - the options
+ * @param {string=} options.protocol - Protocol on which is required to be checked.
+ * @param {boolean=} options.force - This will delete the app even if it is not created by this module
+ * @param {string=} options.defaultApp - This is the default app for this protocol
+ * @returns {Promise}
+ */
+const deRegister = async ({ protocol, force, defaultApp }) => {
+    const configPaths = [
+        join(constants.osHomeDir, '.config', 'mimeapps.list'),
+        join(constants.osHomeDir, '.local/share/applications', 'mimeapps.list')
+    ];
+
+    const defaultAppName = defaultApp.split('/').pop();
+
+    checkAndRemoveFileLines(configPaths, [
+        `x-scheme-handler/${protocol}=${defaultAppName}`
+    ]);
+
+    const fileData = fs.readFileSync(defaultApp, 'utf-8');
+    const registeredByThisModule = fileContainsExactLine(
+        fileData,
+        `PRIdentifier=com.protocol.registry.${protocol}`
+    );
+
+    if (registeredByThisModule || force) {
+        // delete the desktop app if created by this protocol
+        fs.rmSync(defaultApp, {
+            recursive: true,
+            force: true
+        });
+    } else {
+        checkAndRemoveFileLines(
+            [defaultApp],
+            [
+                `MimeType=x-scheme-handler/${protocol};`,
+                `MimeType=x-scheme-handler/${protocol}`,
+                `X-Scheme-Handler=${protocol}`,
+                `X-Scheme-Handler=${protocol};`
+            ]
+        );
+    }
+
+    const internalProtocolDir = join(constants.homedir, protocol);
+
+    // Remove the internal app and script if it is created by this module
+    if (registeredByThisModule && fs.existsSync(internalProtocolDir)) {
+        fs.rmSync(internalProtocolDir, { recursive: true, force: true });
+    }
+};
+
 module.exports = {
-    checkifExists,
-    register
+    getDefaultApp,
+    register,
+    deRegister
 };
