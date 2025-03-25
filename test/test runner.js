@@ -23,6 +23,10 @@ const data = {
     args: process.argv
 };
 
+if (!fs.existsSync(join(__dirname, '../temp'))) {
+    fs.mkdirSync(join(__dirname, '../temp'), { recursive: true });
+}
+
 fs.writeFileSync(
     join(__dirname, '../temp/data.json'),
     JSON.stringify(data, null, 4)
